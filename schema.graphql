@@ -4,3 +4,9 @@ type Gravatar @entity {
   displayName: String!
   imageUrl: String!
 }
+type TransferDone @entity{
+  id: ID!
+  from: Bytes!
+  to: Bytes!
+  value: BigInt!
+}

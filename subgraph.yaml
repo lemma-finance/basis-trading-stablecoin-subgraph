@@ -1,14 +1,14 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
-repository: https://github.com/graphprotocol/example-subgraph
+description: Lemma's basis trading stablecoin subgraph
+repository: https://github.com/lemma-finance/basis-trading-stablecoin-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: Gravity
-    network: mainnet
+    network: arbitrum-rinkeby
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
+      address: "0xe4DB129B36D137b5DB6B4d502dc6E1198E27aC6e"
       abi: Gravity
     mapping:
       kind: ethereum/events
@@ -25,3 +25,22 @@ dataSources:
         - event: UpdatedGravatar(uint256,address,string,string)
           handler: handleUpdatedGravatar
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: USDLemma
+    network: arbitrum-rinkeby
+    source:
+      address: "0xB801A252d8996444929391519251B659c87b8eCb"
+      abi: USDLemma
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - TransferDone
+      abis:
+        - name: USDLemma
+          file: ./abis/USDLemma.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/usdLemma.ts
