@@ -2,7 +2,8 @@ import { Transfer } from '../generated/USDLemma/USDLemma'
 import { TransferDone, User, USDL } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 
-const xUSDLAddress = "0x7A9Ec1d04904907De0ED7b6839CcdD59c3716AC9"
+// const xUSDLAddress = "0xD42912755319665397FF090fBB63B1a31aE87Cee"
+const xUSDLAddress = "0xb1293BFF647c497E839AF95908cEA12cfd9Bf551"
 export function handleTransfer(event: Transfer): void {
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -65,9 +66,9 @@ export function handleTransfer(event: Transfer): void {
             //not possible
             userFrom = new User(event.params.to.toHex())
             userFrom.usdLBalance = BigInt.zero()
-        } else {
-            userFrom.usdLBalance = userFrom.usdLBalance.minus(event.params.value);
         }
+        userFrom.usdLBalance = userFrom.usdLBalance.minus(event.params.value);
+
         userFrom.save()
     }
 

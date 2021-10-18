@@ -5,35 +5,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
-    network: arbitrum-rinkeby
-    # network: mainnet
-    source:
-      address: "0xe4DB129B36D137b5DB6B4d502dc6E1198E27aC6e"
-      # address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
-      abi: Gravity
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - Gravatar
-      abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
-      eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
-      file: ./src/mapping.ts
-  - kind: ethereum/contract
     name: USDLemma
     network: arbitrum-rinkeby
     # network: mainnet
     source:
       address: "0xB801A252d8996444929391519251B659c87b8eCb"
-      # address: "0x367761085BF3C12e5DA2Df99AC6E1a824612b8fb"
+      # address: "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1"
       abi: USDLemma
     mapping:
       kind: ethereum/events
