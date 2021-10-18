@@ -1,14 +1,14 @@
 {
-  "name": "basis-trading-stablecoin-subgraph",
+  "name": "basisTradingStablecoinSubgraph",
   "version": "0.1.0",
   "scripts": {
     "build-contract": "solc contracts/Gravity.sol --abi -o abis --overwrite && solc contracts/Gravity.sol --bin -o bin --overwrite",
-    "create": "graph create lemma-finance/basis-trading-stablecoin-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create lemma-finance/basis-trading-stablecoin-subgraph --node http://127.0.0.1:8020",
+    "create": "graph create yashnaman/basisTradingStablecoinSubgraph --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create yashnaman/basisTradingStablecoinSubgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy lemma-finance/basis-trading-stablecoin-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy lemma-finance/basis-trading-stablecoin-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy": "graph deploy yashnaman/basisTradingStablecoinSubgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-local": "graph deploy yashnaman/basisTradingStablecoinSubgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.22.1",

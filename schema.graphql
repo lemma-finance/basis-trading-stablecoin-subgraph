@@ -10,3 +10,12 @@ type TransferDone @entity{
   to: Bytes!
   value: BigInt!
 }
+type User @entity{
+  id: ID!
+  usdLBalance: BigInt!
+}
+type USDL @entity{
+  id: ID!
+  totalSupply: BigInt!
+  multiplier: BigDecimal!
+}

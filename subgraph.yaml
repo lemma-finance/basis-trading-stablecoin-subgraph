@@ -7,8 +7,10 @@ dataSources:
   - kind: ethereum/contract
     name: Gravity
     network: arbitrum-rinkeby
+    # network: mainnet
     source:
       address: "0xe4DB129B36D137b5DB6B4d502dc6E1198E27aC6e"
+      # address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
       abi: Gravity
     mapping:
       kind: ethereum/events
@@ -28,8 +30,10 @@ dataSources:
   - kind: ethereum/contract
     name: USDLemma
     network: arbitrum-rinkeby
+    # network: mainnet
     source:
       address: "0xB801A252d8996444929391519251B659c87b8eCb"
+      # address: "0x367761085BF3C12e5DA2Df99AC6E1a824612b8fb"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -37,6 +41,8 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - TransferDone
+        - User
+        - USDL
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
