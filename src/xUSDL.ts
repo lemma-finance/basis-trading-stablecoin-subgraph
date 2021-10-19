@@ -1,4 +1,4 @@
-import { Deposit } from '../generated/XUSDL/XUSDL'
+import { Deposit, Transfer } from '../generated/XUSDL/XUSDL'
 import { XUSDL, User } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
@@ -25,20 +25,81 @@ export function handleDeposit(event: Deposit): void {
         if (xUSDLUser !== null) {
             let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
             pricePerShare = pricePerShare.truncate(18)
+
             shares = USDLAmountDeposited.div(pricePerShare)
             shares = shares.truncate(18)
+
+            xUSDL.pricePerShare = pricePerShare
         }
     }
-    xUSDL.totalSupply = xUSDL.totalSupply.plus(shares)
     xUSDL.save()
 
-    let user = User.load(event.params.user.toHex())
-    if (user !== null) {
-        user.xUSDLBalance = user.xUSDLBalance.plus(shares)
-        user.save()
-    }
-
 }
+
+export function handleTransfer(event: Transfer): void {
+
+    const usdlId = "1";
+    let xUSDL = XUSDL.load(usdlId)
+    if (xUSDL === null) {
+        xUSDL = new XUSDL(usdlId)
+        xUSDL.totalSupply = ZERO_BD
+        xUSDL.pricePerShare = ZERO_BD
+    }
+    const valueInBD = convertToDecimal(event.params.value, BI_18)
+
+    //mint
+    if (event.params.from == Address.zero()) {
+        let userTo = User.load(event.params.to.toHex())
+        if (userTo === null) {
+            userTo = new User(event.params.to.toHex())
+            userTo.xUSDLBalance = ZERO_BD
+            userTo.xUSDLBalance = ZERO_BD
+        }
+        userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
+        userTo.save()
+
+        xUSDL.totalSupply = xUSDL.totalSupply.plus(valueInBD)
+    }
+    //burn
+    else if (event.params.to == Address.zero()) {
+        let userFrom = User.load(event.params.from.toHex())
+        if (userFrom === null) {
+            //not possible
+            userFrom = new User(event.params.to.toHex())
+            userFrom.xUSDLBalance = ZERO_BD
+            userFrom.xUSDLBalance = ZERO_BD
+        }
+        userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
+        userFrom.save()
+
+        xUSDL.totalSupply = xUSDL.totalSupply.minus(valueInBD);
+    }
+    //transfer
+    else {
+
+        let userTo = User.load(event.params.to.toHex())
+        if (userTo === null) {
+            userTo = new User(event.params.to.toHex())
+            userTo.xUSDLBalance = ZERO_BD
+            userTo.xUSDLBalance = ZERO_BD
+        }
+        userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
+        userTo.save()
+
+        let userFrom = User.load(event.params.from.toHex())
+        if (userFrom === null) {
+            //not possible
+            userFrom = new User(event.params.to.toHex())
+            userFrom.xUSDLBalance = ZERO_BD
+            userFrom.xUSDLBalance = ZERO_BD
+        }
+        userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
+
+        userFrom.save()
+    }
+    xUSDL.save()
+}
+
 
 
 // export function handleUpdatedGravatar(event: UpdatedGravatar): void {
