@@ -6,10 +6,16 @@ type TransferDone @entity{
 }
 type User @entity{
   id: ID!
-  usdLBalance: BigInt!
+  usdLBalance: BigDecimal!
+  xUSDLBalance:BigDecimal!
 }
 type USDL @entity{
   id: ID!
-  totalSupply: BigInt!
+  totalSupply: BigDecimal!
   multiplier: BigDecimal!
+}
+type XUSDL @entity{
+  id: ID!
+  totalSupply: BigDecimal!
+  pricePerShare: BigDecimal!
 }

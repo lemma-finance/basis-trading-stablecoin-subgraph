@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: USDLemma
-    network: arbitrum-rinkeby
-    # network: mainnet
+    # network: arbitrum-rinkeby
+    network: mainnet
     source:
-      address: "0xB801A252d8996444929391519251B659c87b8eCb"
-      # address: "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1"
+      # address: "0xB801A252d8996444929391519251B659c87b8eCb"
+      address: "0x998abeb3E57409262aE5b751f60747921B33613E"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -20,6 +20,7 @@ dataSources:
         - TransferDone
         - User
         - USDL
+        - XUSDL
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
@@ -27,3 +28,24 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/usdLemma.ts
+  - kind: ethereum/contract
+    name: XUSDL
+    # network: arbitrum-rinkeby
+    network: mainnet
+    source:
+      # address: "0xB801A252d8996444929391519251B659c87b8eCb"
+      address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
+      abi: XUSDL
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - XUSDL
+      abis:
+        - name: XUSDL
+          file: ./abis/XUSDL.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256)
+          handler: handleDeposit
+      file: ./src/xUSDL.ts

@@ -1,9 +1,9 @@
 import { Transfer } from '../generated/USDLemma/USDLemma'
 import { TransferDone, User, USDL } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
-
+import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 // const xUSDLAddress = "0xD42912755319665397FF090fBB63B1a31aE87Cee"
-const xUSDLAddress = "0xb1293BFF647c497E839AF95908cEA12cfd9Bf551"
+const xUSDLAddress = "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
 export function handleTransfer(event: Transfer): void {
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -22,21 +22,23 @@ export function handleTransfer(event: Transfer): void {
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
         usdl = new USDL(usdlId)
-        usdl.totalSupply = BigInt.zero()
-        usdl.multiplier = BigDecimal.zero()
+        usdl.totalSupply = ZERO_BD
+        usdl.multiplier = ZERO_BD
     }
+    const valueInBD = convertToDecimal(event.params.value, BI_18)
 
     //mint
     if (event.params.from == Address.zero()) {
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.usdLBalance = BigInt.zero()
+            userTo.usdLBalance = ZERO_BD
+            userTo.xUSDLBalance = ZERO_BD
         }
-        userTo.usdLBalance = userTo.usdLBalance.plus(event.params.value)
+        userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
         userTo.save()
 
-        usdl.totalSupply = usdl.totalSupply.plus(event.params.value)
+        usdl.totalSupply = usdl.totalSupply.plus(valueInBD)
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -44,39 +46,71 @@ export function handleTransfer(event: Transfer): void {
         if (userFrom === null) {
             //not possible
             userFrom = new User(event.params.to.toHex())
-            userFrom.usdLBalance = BigInt.zero()
+            userFrom.usdLBalance = ZERO_BD
+            userFrom.xUSDLBalance = ZERO_BD
         }
-        userFrom.usdLBalance = userFrom.usdLBalance.minus(event.params.value);
+        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD);
         userFrom.save()
 
-        usdl.totalSupply = usdl.totalSupply.minus(event.params.value);
+        usdl.totalSupply = usdl.totalSupply.minus(valueInBD);
     }
     //transfer
     else {
+
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.usdLBalance = BigInt.zero()
+            userTo.usdLBalance = ZERO_BD
+            userTo.xUSDLBalance = ZERO_BD
         }
-        userTo.usdLBalance = userTo.usdLBalance.plus(event.params.value)
+        userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
         userTo.save()
 
         let userFrom = User.load(event.params.from.toHex())
         if (userFrom === null) {
             //not possible
             userFrom = new User(event.params.to.toHex())
-            userFrom.usdLBalance = BigInt.zero()
+            userFrom.usdLBalance = ZERO_BD
+            userFrom.xUSDLBalance = ZERO_BD
         }
-        userFrom.usdLBalance = userFrom.usdLBalance.minus(event.params.value);
+        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD);
 
         userFrom.save()
+
+        let xUSDLUser = User.load(Address.fromString(xUSDLAddress).toHex())
+        if (xUSDLUser !== null) {
+            usdl.multiplier = usdl.totalSupply.div(xUSDLUser.usdLBalance)
+        }
+
+        //     const xUSDLId = "1";
+        //     let xUSDL = XUSDL.load(xUSDLId)
+        //     if (xUSDL === null) {
+        //         xUSDL = new XUSDL(xUSDLId)
+        //         xUSDL.totalSupply = BigInt.zero()
+        //         xUSDL.pricePerShare = BigDecimal.zero()
+        //     }
+
+        //     if (event.params.to === Address.fromString(xUSDLAddress)) {
+        //         //stake
+        //         const USDLAmountDeposited = BigInt.fromString(event.params.value.toString());
+        //         const ONE = BigInt.fromString("1").pow(BigInt.fromString("18"))
+        //         let shares = BigInt.zero();//xUSDLToMint
+
+        //         if (xUSDL.totalSupply === BigInt.zero()) {
+        //             shares = USDLAmountDeposited;
+        //         } else {
+        //             let pricePerShare = xUSDLUser.usdLBalance.times(ONE).div(xUSDL.totalSupply)
+        //             shares = USDLAmountDeposited.times(ONE).div(pricePerShare)
+        //         }
+        //         xUSDL.totalSupply = xUSDL.totalSupply.plus(shares)
+        //         userFrom.xUSDLBalance = userFrom.xUSDLBalance.plus(shares)
+        //     }
+
+
     }
 
 
-    let xUSDLUser = User.load(Address.fromString(xUSDLAddress).toHex())
-    if (xUSDLUser !== null) {
-        usdl.multiplier = (new BigDecimal(usdl.totalSupply)).div(new BigDecimal(xUSDLUser.usdLBalance))
-    }
+
 
     usdl.save()
 }
