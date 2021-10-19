@@ -7,33 +7,6 @@ import { XUSDL_ADDRESS } from './const';
 
 export function handleDeposit(event: Deposit): void {
 
-    const xUSDLId = "1";
-    let xUSDL = XUSDL.load(xUSDLId)
-    if (xUSDL === null) {
-        xUSDL = new XUSDL(xUSDLId)
-        xUSDL.totalSupply = ZERO_BD
-        xUSDL.pricePerShare = ZERO_BD
-    }
-    // //stake
-    const USDLAmountDeposited = convertToDecimal(event.params.amount, BI_18);
-    let shares = ZERO_BD;//xUSDLToMint
-
-    if (xUSDL.totalSupply.equals(ZERO_BD)) {
-        shares = USDLAmountDeposited;
-    } else {
-        let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
-        if (xUSDLUser !== null) {
-            let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
-            pricePerShare = pricePerShare.truncate(18)
-
-            shares = USDLAmountDeposited.div(pricePerShare)
-            shares = shares.truncate(18)
-
-            xUSDL.pricePerShare = pricePerShare
-        }
-    }
-    xUSDL.save()
-
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -52,13 +25,14 @@ export function handleTransfer(event: Transfer): void {
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.xUSDLBalance = ZERO_BD
+            userTo.usdLBalance = ZERO_BD
             userTo.xUSDLBalance = ZERO_BD
         }
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
         userTo.save()
 
         xUSDL.totalSupply = xUSDL.totalSupply.plus(valueInBD)
+        xUSDL.save()
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -66,13 +40,14 @@ export function handleTransfer(event: Transfer): void {
         if (userFrom === null) {
             //not possible
             userFrom = new User(event.params.to.toHex())
-            userFrom.xUSDLBalance = ZERO_BD
+            userFrom.usdLBalance = ZERO_BD
             userFrom.xUSDLBalance = ZERO_BD
         }
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
         userFrom.save()
 
         xUSDL.totalSupply = xUSDL.totalSupply.minus(valueInBD);
+        xUSDL.save()
     }
     //transfer
     else {
@@ -97,7 +72,7 @@ export function handleTransfer(event: Transfer): void {
 
         userFrom.save()
     }
-    xUSDL.save()
+
 }
 
 

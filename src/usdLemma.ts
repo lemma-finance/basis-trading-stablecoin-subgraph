@@ -1,5 +1,5 @@
 import { Transfer } from '../generated/USDLemma/USDLemma'
-import { TransferDone, User, USDL } from '../generated/schema'
+import { TransferDone, User, USDL, XUSDL } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
@@ -39,6 +39,7 @@ export function handleTransfer(event: Transfer): void {
         userTo.save()
 
         usdl.totalSupply = usdl.totalSupply.plus(valueInBD)
+        usdl.save()
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -53,6 +54,7 @@ export function handleTransfer(event: Transfer): void {
         userFrom.save()
 
         usdl.totalSupply = usdl.totalSupply.minus(valueInBD);
+        usdl.save()
     }
     //transfer
     else {
@@ -77,12 +79,34 @@ export function handleTransfer(event: Transfer): void {
 
         userFrom.save()
 
+    }
+    let usdl1 = USDL.load(usdlId);
+    if (usdl1 !== null) {
         let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
         if (xUSDLUser !== null) {
-            usdl.multiplier = usdl.totalSupply.div(xUSDLUser.usdLBalance)
+            usdl1.multiplier = usdl1.totalSupply.div(xUSDLUser.usdLBalance)
+        }
+        usdl1.save()
+    }
+
+    const xUSDLId = "1";
+    let xUSDL = XUSDL.load(xUSDLId)
+    if (xUSDL === null) {
+        xUSDL = new XUSDL(xUSDLId)
+        xUSDL.totalSupply = ZERO_BD
+        xUSDL.pricePerShare = ZERO_BD
+    }
+
+    if (xUSDL.totalSupply.notEqual(ZERO_BD)) {
+        let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
+        if (xUSDLUser !== null) {
+            let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
+            pricePerShare = pricePerShare.truncate(18)
+            xUSDL.pricePerShare = pricePerShare
         }
     }
-    usdl.save()
+    xUSDL.save()
+
 }
 
 

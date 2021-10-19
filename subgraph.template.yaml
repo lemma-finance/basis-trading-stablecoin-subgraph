@@ -42,6 +42,8 @@ dataSources:
         - name: XUSDL
           file: ./abis/XUSDL.json
       eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
         - event: Deposit(indexed address,uint256)
           handler: handleDeposit
       file: ./src/xUSDL.ts
