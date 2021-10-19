@@ -68,3 +68,5 @@ generated
 build
 
 contracts
+
+config/local

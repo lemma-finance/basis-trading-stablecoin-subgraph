@@ -2,8 +2,8 @@ import { Transfer } from '../generated/USDLemma/USDLemma'
 import { TransferDone, User, USDL } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
-// const xUSDLAddress = "0xD42912755319665397FF090fBB63B1a31aE87Cee"
-const xUSDLAddress = "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
+import { XUSDL_ADDRESS } from './const';
+
 export function handleTransfer(event: Transfer): void {
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -77,41 +77,11 @@ export function handleTransfer(event: Transfer): void {
 
         userFrom.save()
 
-        let xUSDLUser = User.load(Address.fromString(xUSDLAddress).toHex())
+        let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
         if (xUSDLUser !== null) {
             usdl.multiplier = usdl.totalSupply.div(xUSDLUser.usdLBalance)
         }
-
-        //     const xUSDLId = "1";
-        //     let xUSDL = XUSDL.load(xUSDLId)
-        //     if (xUSDL === null) {
-        //         xUSDL = new XUSDL(xUSDLId)
-        //         xUSDL.totalSupply = BigInt.zero()
-        //         xUSDL.pricePerShare = BigDecimal.zero()
-        //     }
-
-        //     if (event.params.to === Address.fromString(xUSDLAddress)) {
-        //         //stake
-        //         const USDLAmountDeposited = BigInt.fromString(event.params.value.toString());
-        //         const ONE = BigInt.fromString("1").pow(BigInt.fromString("18"))
-        //         let shares = BigInt.zero();//xUSDLToMint
-
-        //         if (xUSDL.totalSupply === BigInt.zero()) {
-        //             shares = USDLAmountDeposited;
-        //         } else {
-        //             let pricePerShare = xUSDLUser.usdLBalance.times(ONE).div(xUSDL.totalSupply)
-        //             shares = USDLAmountDeposited.times(ONE).div(pricePerShare)
-        //         }
-        //         xUSDL.totalSupply = xUSDL.totalSupply.plus(shares)
-        //         userFrom.xUSDLBalance = userFrom.xUSDLBalance.plus(shares)
-        //     }
-
-
     }
-
-
-
-
     usdl.save()
 }
 

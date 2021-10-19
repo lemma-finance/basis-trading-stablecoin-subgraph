@@ -1,0 +1,1 @@
+export const XUSDL_ADDRESS = "{{ XUSDL }}"
