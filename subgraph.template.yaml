@@ -19,6 +19,7 @@ dataSources:
         - User
         - USDL
         - XUSDL
+        - DailyVolume
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
@@ -38,6 +39,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - XUSDL
+        - DailyVolume
       abis:
         - name: XUSDL
           file: ./abis/XUSDL.json

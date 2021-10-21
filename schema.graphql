@@ -19,3 +19,8 @@ type XUSDL @entity{
   totalSupply: BigDecimal!
   pricePerShare: BigDecimal!
 }
+type DailyVolume @entity{
+  id: ID!
+  DailyUSDLTotalSupply: BigDecimal!
+  DailyxUSDLTotalSupply: BigDecimal!
+}

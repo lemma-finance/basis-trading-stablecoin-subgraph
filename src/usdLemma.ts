@@ -1,10 +1,16 @@
 import { Transfer } from '../generated/USDLemma/USDLemma'
-import { TransferDone, User, USDL, XUSDL } from '../generated/schema'
+import { TransferDone, User, USDL, XUSDL, DailyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
 
 export function handleTransfer(event: Transfer): void {
+
+    let timestamp = event.block.timestamp.toI32()
+    let dayID = timestamp / 86400 // rounded
+    let dayStartTimestamp = dayID * 86400
+    let dailyVolume = new DailyVolume(dayStartTimestamp.toString())
+
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
     transferDone.from = event.params.from
@@ -40,6 +46,9 @@ export function handleTransfer(event: Transfer): void {
 
         usdl.totalSupply = usdl.totalSupply.plus(valueInBD)
         usdl.save()
+
+        dailyVolume.DailyUSDLTotalSupply = dailyVolume.DailyUSDLTotalSupply.plus(valueInBD)
+        dailyVolume.save()
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -55,6 +64,9 @@ export function handleTransfer(event: Transfer): void {
 
         usdl.totalSupply = usdl.totalSupply.minus(valueInBD);
         usdl.save()
+
+        dailyVolume.DailyUSDLTotalSupply = dailyVolume.DailyUSDLTotalSupply.minus(valueInBD)
+        dailyVolume.save()
     }
     //transfer
     else {
