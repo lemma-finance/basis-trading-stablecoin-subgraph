@@ -21,16 +21,16 @@ type XUSDL @entity{
 }
 type HourlyVolume @entity{
   id: ID!
-  HourlyUSDLTotalSupply: BigDecimal!
-  HourlyxUSDLTotalSupply: BigDecimal!
+  hourlyUSDLTotalSupply: BigDecimal!
+  hourlyxUSDLTotalSupply: BigDecimal!
 }
 type DailyVolume @entity{
   id: ID!
-  DailyUSDLTotalSupply: BigDecimal!
-  DailyxUSDLTotalSupply: BigDecimal!
+  dailyUSDLTotalSupply: BigDecimal!
+  dailyxUSDLTotalSupply: BigDecimal!
 }
 type MonthlyVolume @entity{
   id: ID!
-  MonthlyUSDLTotalSupply: BigDecimal!
-  MonthlyxUSDLTotalSupply: BigDecimal!
+  monthlyUSDLTotalSupply: BigDecimal!
+  monthlyxUSDLTotalSupply: BigDecimal!
 }

@@ -16,17 +16,32 @@ export function handleTransfer(event: Transfer): void {
     // Hourly
     let hourIndex = timestamp / 3600 // get unique hour within unix history
     let hourStartUnix = hourIndex * 3600 // want the rounded effect
-    let hourlyVolume = new HourlyVolume(hourStartUnix.toString())
+    let hourlyVolume = HourlyVolume.load(hourStartUnix.toString())
+    if (hourlyVolume === null) {
+        hourlyVolume = new HourlyVolume(hourStartUnix.toString())
+        hourlyVolume.hourlyxUSDLTotalSupply = ZERO_BD;
+        hourlyVolume.hourlyxUSDLTotalSupply = ZERO_BD
+    }
 
     // Daily
     let dayID = timestamp / 86400 // rounded
     let dayStartTimestamp = dayID * 86400
-    let dailyVolume = new DailyVolume(dayStartTimestamp.toString())
+    let dailyVolume = DailyVolume.load(dayStartTimestamp.toString())
+    if (dailyVolume === null) {
+        dailyVolume = new DailyVolume(dayStartTimestamp.toString())
+        dailyVolume.dailyUSDLTotalSupply = ZERO_BD;
+        dailyVolume.dailyUSDLTotalSupply = ZERO_BD
+    }
 
     // Monthly
-    let monthID = timestamp / 2592000 // rounded // 2592000 => 30days = (30 * 86400)
+    let monthID = timestamp / 2592000 // rounded
     let monthStartTimestamp = monthID * 2592000
-    let monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
+    let monthlyVolume = MonthlyVolume.load(monthStartTimestamp.toString())
+    if (monthlyVolume === null) {
+        monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
+        monthlyVolume.monthlyUSDLTotalSupply = ZERO_BD;
+        monthlyVolume.monthlyxUSDLTotalSupply = ZERO_BD
+    }
 
     const usdlId = "1";
     let xUSDL = XUSDL.load(usdlId)
@@ -50,15 +65,6 @@ export function handleTransfer(event: Transfer): void {
 
         xUSDL.totalSupply = xUSDL.totalSupply.plus(valueInBD)
         xUSDL.save()
-
-        hourlyVolume.HourlyxUSDLTotalSupply = hourlyVolume.HourlyxUSDLTotalSupply.plus(valueInBD)
-        hourlyVolume.save()
-
-        dailyVolume.DailyxUSDLTotalSupply = dailyVolume.DailyxUSDLTotalSupply.plus(valueInBD)
-        dailyVolume.save()
-
-        monthlyVolume.MonthlyxUSDLTotalSupply = monthlyVolume.MonthlyxUSDLTotalSupply.plus(valueInBD)
-        monthlyVolume.save()
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -74,15 +80,6 @@ export function handleTransfer(event: Transfer): void {
 
         xUSDL.totalSupply = xUSDL.totalSupply.minus(valueInBD);
         xUSDL.save()
-
-        hourlyVolume.HourlyxUSDLTotalSupply = hourlyVolume.HourlyxUSDLTotalSupply.minus(valueInBD)
-        hourlyVolume.save()
-
-        dailyVolume.DailyxUSDLTotalSupply = dailyVolume.DailyxUSDLTotalSupply.minus(valueInBD)
-        dailyVolume.save()
-
-        monthlyVolume.MonthlyxUSDLTotalSupply = monthlyVolume.MonthlyxUSDLTotalSupply.minus(valueInBD)
-        monthlyVolume.save()
     }
     //transfer
     else {
@@ -107,6 +104,15 @@ export function handleTransfer(event: Transfer): void {
 
         userFrom.save()
     }
+
+    hourlyVolume.hourlyxUSDLTotalSupply = xUSDL.totalSupply;
+    hourlyVolume.save()
+
+    dailyVolume.dailyxUSDLTotalSupply = xUSDL.totalSupply
+    dailyVolume.save()
+
+    monthlyVolume.monthlyxUSDLTotalSupply = xUSDL.totalSupply
+    monthlyVolume.save()
 
 }
 
