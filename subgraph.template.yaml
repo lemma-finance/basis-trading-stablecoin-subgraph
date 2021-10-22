@@ -20,6 +20,8 @@ dataSources:
         - USDL
         - XUSDL
         - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
@@ -40,6 +42,8 @@ dataSources:
       entities:
         - XUSDL
         - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
       abis:
         - name: XUSDL
           file: ./abis/XUSDL.json

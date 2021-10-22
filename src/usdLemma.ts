@@ -1,5 +1,5 @@
 import { Transfer } from '../generated/USDLemma/USDLemma'
-import { TransferDone, User, USDL, XUSDL, DailyVolume } from '../generated/schema'
+import { TransferDone, User, USDL, XUSDL, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
@@ -7,9 +7,21 @@ import { XUSDL_ADDRESS } from './const';
 export function handleTransfer(event: Transfer): void {
 
     let timestamp = event.block.timestamp.toI32()
+
+    // Hourly
+    let hourIndex = timestamp / 3600 // get unique hour within unix history
+    let hourStartUnix = hourIndex * 3600 // want the rounded effect
+    let hourlyVolume = new HourlyVolume(hourStartUnix.toString())
+
+    // Daily
     let dayID = timestamp / 86400 // rounded
     let dayStartTimestamp = dayID * 86400
     let dailyVolume = new DailyVolume(dayStartTimestamp.toString())
+
+    // Monthly
+    let monthID = timestamp / 2592000 // rounded
+    let monthStartTimestamp = monthID * 2592000
+    let monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
 
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -47,8 +59,14 @@ export function handleTransfer(event: Transfer): void {
         usdl.totalSupply = usdl.totalSupply.plus(valueInBD)
         usdl.save()
 
+        hourlyVolume.HourlyUSDLTotalSupply = hourlyVolume.HourlyUSDLTotalSupply.plus(valueInBD)
+        hourlyVolume.save()
+
         dailyVolume.DailyUSDLTotalSupply = dailyVolume.DailyUSDLTotalSupply.plus(valueInBD)
         dailyVolume.save()
+
+        monthlyVolume.MonthlyUSDLTotalSupply = monthlyVolume.MonthlyUSDLTotalSupply.plus(valueInBD)
+        monthlyVolume.save()
     }
     //burn
     else if (event.params.to == Address.zero()) {
@@ -65,8 +83,14 @@ export function handleTransfer(event: Transfer): void {
         usdl.totalSupply = usdl.totalSupply.minus(valueInBD);
         usdl.save()
 
+        hourlyVolume.HourlyUSDLTotalSupply = hourlyVolume.HourlyUSDLTotalSupply.minus(valueInBD)
+        hourlyVolume.save()
+
         dailyVolume.DailyUSDLTotalSupply = dailyVolume.DailyUSDLTotalSupply.minus(valueInBD)
         dailyVolume.save()
+
+        monthlyVolume.MonthlyUSDLTotalSupply = monthlyVolume.MonthlyUSDLTotalSupply.minus(valueInBD)
+        monthlyVolume.save()
     }
     //transfer
     else {
