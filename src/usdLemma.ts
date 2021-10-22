@@ -1,4 +1,4 @@
-import { Transfer } from '../generated/USDLemma/USDLemma'
+import { Transfer, Rebalance, FeesUpdated } from '../generated/USDLemma/USDLemma'
 import { TransferDone, User, USDL, XUSDL, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
@@ -164,3 +164,42 @@ export function handleTransfer(event: Transfer): void {
 //     gravatar.imageUrl = event.params.imageUrl
 //     gravatar.save()
 // }
+
+export function handleRebalance(event: Rebalance): void {    
+    const usdlId = "1";
+    let xUSDL = XUSDL.load(usdlId)
+    if (xUSDL === null) {
+        xUSDL = new XUSDL(usdlId)
+        xUSDL.totalSupply = ZERO_BD
+        xUSDL.pricePerShare = ZERO_BD
+        xUSDL.USDEarnings = ZERO_BD
+    }
+
+    let usdl = USDL.load(usdlId)
+    if (usdl === null) {
+        usdl = new USDL(usdlId)
+        usdl.totalSupply = ZERO_BD
+        usdl.multiplier = ZERO_BD
+        usdl.fees = ZERO_BD
+    }
+
+    // USDEarning += convertToDecimal(amount (emitted in reBalance event)) * (1 - usdl.fees)
+    const valueInBD = convertToDecimal(event.params.amount, BI_18)
+    const ONE = BigDecimal.fromString('1')
+    xUSDL.USDEarnings = xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))
+    xUSDL.save()
+}
+
+export function handleFeesUpdated(event: FeesUpdated): void {
+    const fees = event.params.newFees
+    const usdlId = "1";
+    let usdl = USDL.load(usdlId)
+    if (usdl === null) {
+        usdl = new USDL(usdlId)
+        usdl.totalSupply = ZERO_BD
+        usdl.multiplier = ZERO_BD
+        usdl.fees = ZERO_BD
+    }
+    usdl.fees = BigDecimal.fromString(fees.toString())
+    usdl.save()
+}

@@ -116,8 +116,6 @@ export function handleTransfer(event: Transfer): void {
 
 }
 
-
-
 // export function handleUpdatedGravatar(event: UpdatedGravatar): void {
 //     let id = event.params.id.toHex()
 //     let gravatar = Gravatar.load(id)

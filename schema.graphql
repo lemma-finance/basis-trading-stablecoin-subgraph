@@ -13,11 +13,13 @@ type USDL @entity{
   id: ID!
   totalSupply: BigDecimal!
   multiplier: BigDecimal!
+  fees: BigDecimal!
 }
 type XUSDL @entity{
   id: ID!
   totalSupply: BigDecimal!
   pricePerShare: BigDecimal!
+  USDEarnings:  BigDecimal!
 }
 type HourlyVolume @entity{
   id: ID!

@@ -28,6 +28,10 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: Rebalance(indexed uint256,indexed address,int256)
+          handler: handleRebalance
+        - event: FeesUpdated(uint256)
+          handler: handleFeesUpdated
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
     name: XUSDL
