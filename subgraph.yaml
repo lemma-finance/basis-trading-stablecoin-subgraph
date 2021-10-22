@@ -34,6 +34,25 @@ dataSources:
           handler: handleFeesUpdated
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
+    name: MCDEXLemma
+    network: mainnet
+    source:
+      address: "0xf5059a5D33d5853360D16C683c16e67980206f36"
+      abi: MCDEXLemma
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - USDL
+      abis:
+        - name: MCDEXLemma
+          file: ./abis/MCDEXLemma.json
+      eventHandlers:
+        - event: MaxPositionUpdated(uint256)
+          handler: handleMaxPositionUpdated
+      file: ./src/mcdexLemma.ts
+  - kind: ethereum/contract
     name: XUSDL
     network: mainnet
     source:
