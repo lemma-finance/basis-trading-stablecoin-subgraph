@@ -37,9 +37,21 @@ type MonthlyVolume @entity{
   monthlyUSDLTotalSupply: BigDecimal!
   monthlyxUSDLTotalSupply: BigDecimal!
 }
+type DailyAPY @entity{
+  id: ID!
+  dailyUSDEarnings: BigDecimal!
+  avgUSDLBalOfXusdlContract: BigDecimal!
+  dailyApy: BigDecimal!
+}
 type WeeklyAPY @entity{
   id: ID!
   weeklyUSDEarnings: BigDecimal!
   avgUSDLBalOfXusdlContract: BigDecimal!
   weeklyApy: BigDecimal!
+}
+type MonthlyAPY @entity{
+  id: ID!
+  monthlyUSDEarnings: BigDecimal!
+  avgUSDLBalOfXusdlContract: BigDecimal!
+  monthlyApy: BigDecimal!
 }

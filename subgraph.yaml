@@ -22,7 +22,9 @@ dataSources:
         - DailyVolume
         - HourlyVolume
         - MonthlyVolume
+        - DailyAPY 
         - WeeklyAPY
+        - MonthlyAPY
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
