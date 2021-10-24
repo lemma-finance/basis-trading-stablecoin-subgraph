@@ -1,5 +1,5 @@
 import { Transfer, Rebalance, FeesUpdated } from '../generated/USDLemma/USDLemma'
-import { TransferDone, User, USDL, XUSDL, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
+import { TransferDone, User, USDL, XUSDL, HourlyVolume, DailyVolume, MonthlyVolume, WeeklyAPY } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
@@ -188,6 +188,43 @@ export function handleRebalance(event: Rebalance): void {
     const ONE = BigDecimal.fromString('1')
     xUSDL.USDEarnings = xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))
     xUSDL.save()
+
+    // Weekly APY
+    // 7 days * 86400 = 604800
+    let timestamp = event.block.timestamp.toI32()
+    let weeklyIndex = timestamp / 604800 // get unique Weekly within unix history
+    let weeklyStartUnix = weeklyIndex * 604800 // want the rounded effect
+    let weeklyAPYs = WeeklyAPY.load(weeklyStartUnix.toString())
+    if (weeklyAPYs === null) {
+        weeklyAPYs = new WeeklyAPY(weeklyStartUnix.toString())
+        weeklyAPYs.weeklyUSDEarnings = ZERO_BD
+        weeklyAPYs.avgUSDLBalOfXusdlContract = ZERO_BD
+        weeklyAPYs.weeklyApy = ZERO_BD
+    }
+
+    weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(valueInBD);
+    
+    let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
+    if (xUSDLUser !== null) {
+        const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
+        if (weeklyAPYs.avgUSDLBalOfXusdlContract === ZERO_BD) {
+            weeklyAPYs.avgUSDLBalOfXusdlContract = usdlBalanceForXusdlContract
+        } else {
+            weeklyAPYs.avgUSDLBalOfXusdlContract = 
+                    weeklyAPYs.avgUSDLBalOfXusdlContract
+                    .plus(usdlBalanceForXusdlContract)
+                    .div(BigDecimal.fromString('2')) 
+        }
+
+        // Weekly APY = (weekly USD earnings / avg USDL balance of xUSDL) * 100 * 52.14
+        weeklyAPYs.weeklyApy = 
+                (weeklyAPYs.weeklyUSDEarnings
+                .div(weeklyAPYs.avgUSDLBalOfXusdlContract))
+                .times(BigDecimal.fromString('100'))
+                .times(BigDecimal.fromString('52.14'))
+    }
+    weeklyAPYs.save()
+
 }
 
 export function handleFeesUpdated(event: FeesUpdated): void {
