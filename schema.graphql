@@ -8,6 +8,7 @@ type User @entity{
   id: ID!
   usdLBalance: BigDecimal!
   xUSDLBalance:BigDecimal!
+  entryValue: BigDecimal!
 }
 type USDL @entity{
   id: ID!

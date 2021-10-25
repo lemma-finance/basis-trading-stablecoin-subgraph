@@ -59,8 +59,10 @@ export function handleTransfer(event: Transfer): void {
             userTo = new User(event.params.to.toHex())
             userTo.usdLBalance = ZERO_BD
             userTo.xUSDLBalance = ZERO_BD
+            userTo.entryValue = ZERO_BD
         }
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
+        userTo.entryValue = userTo.entryValue.plus(xUSDL.pricePerShare.times(valueInBD))
         userTo.save()
 
         xUSDL.totalSupply = xUSDL.totalSupply.plus(valueInBD)
@@ -74,7 +76,10 @@ export function handleTransfer(event: Transfer): void {
             userFrom = new User(event.params.to.toHex())
             userFrom.usdLBalance = ZERO_BD
             userFrom.xUSDLBalance = ZERO_BD
+            userFrom.entryValue = ZERO_BD
         }
+        
+        userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
         userFrom.save()
 
