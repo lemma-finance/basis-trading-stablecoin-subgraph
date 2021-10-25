@@ -19,13 +19,42 @@ dataSources:
         - User
         - USDL
         - XUSDL
+        - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
+        - DailyAPY 
+        - WeeklyAPY
+        - MonthlyAPY
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: Rebalance(indexed uint256,indexed address,int256)
+          handler: handleRebalance
+        - event: FeesUpdated(uint256)
+          handler: handleFeesUpdated
       file: ./src/usdLemma.ts
+  - kind: ethereum/contract
+    name: MCDEXLemma
+    network: {{network}}
+    source:
+      address: "{{MCDEXLemma}}"
+      abi: MCDEXLemma
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - USDL
+      abis:
+        - name: MCDEXLemma
+          file: ./abis/MCDEXLemma.json
+      eventHandlers:
+        - event: MaxPositionUpdated(uint256)
+          handler: handleMaxPositionUpdated
+      file: ./src/mcdexLemma.ts
   - kind: ethereum/contract
     name: XUSDL
     network: {{network}}
@@ -38,6 +67,9 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - XUSDL
+        - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
       abis:
         - name: XUSDL
           file: ./abis/XUSDL.json

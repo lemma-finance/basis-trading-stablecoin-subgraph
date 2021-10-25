@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: USDLemma
-    network: arbitrum-rinkeby
+    network: mainnet
     source:
-      address: "0xE026DBc8DDcdB4A919bAf811B03f32D39f4195C3"
+      address: "0x998abeb3E57409262aE5b751f60747921B33613E"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -19,18 +19,47 @@ dataSources:
         - User
         - USDL
         - XUSDL
+        - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
+        - DailyAPY 
+        - WeeklyAPY
+        - MonthlyAPY
       abis:
         - name: USDLemma
           file: ./abis/USDLemma.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: Rebalance(indexed uint256,indexed address,int256)
+          handler: handleRebalance
+        - event: FeesUpdated(uint256)
+          handler: handleFeesUpdated
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
-    name: XUSDL
-    network: arbitrum-rinkeby
+    name: MCDEXLemma
+    network: mainnet
     source:
-      address: "0x5405b1F36D9FD253c07b8F1f17eD8320cE96b72A"
+      address: "0xf5059a5D33d5853360D16C683c16e67980206f36"
+      abi: MCDEXLemma
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - USDL
+      abis:
+        - name: MCDEXLemma
+          file: ./abis/MCDEXLemma.json
+      eventHandlers:
+        - event: MaxPositionUpdated(uint256)
+          handler: handleMaxPositionUpdated
+      file: ./src/mcdexLemma.ts
+  - kind: ethereum/contract
+    name: XUSDL
+    network: mainnet
+    source:
+      address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
       abi: XUSDL
     mapping:
       kind: ethereum/events
@@ -38,6 +67,9 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - XUSDL
+        - DailyVolume
+        - HourlyVolume
+        - MonthlyVolume
       abis:
         - name: XUSDL
           file: ./abis/XUSDL.json
