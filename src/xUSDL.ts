@@ -1,9 +1,8 @@
 import { Deposit, Transfer } from '../generated/XUSDL/XUSDL'
-import { XUSDL, User, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
+import { XUSDL, User, HourlyUserTrack, DailyUserTrack, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
-
 
 export function handleDeposit(event: Deposit): void {
 
@@ -63,7 +62,40 @@ export function handleTransfer(event: Transfer): void {
         }
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
         userTo.entryValue = userTo.entryValue.plus(xUSDL.pricePerShare.times(valueInBD))
+
+        let userHourID = userTo.id
+            .toString()
+            .concat('-')
+            .concat(hourIndex.toString())
+        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
+        if (hourlyUserTrack === null) {
+            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
+            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
+            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
+            hourlyUserTrack.hourlyEntryValue = ZERO_BD
+        }
+        hourlyUserTrack.user = userTo.id
+        hourlyUserTrack.hourlyXusdlBalance = hourlyUserTrack.hourlyXusdlBalance.plus(valueInBD)
+        hourlyUserTrack.hourlyEntryValue = hourlyUserTrack.hourlyEntryValue.plus(xUSDL.pricePerShare.times(valueInBD))
+
+        let userDailyID = userTo.id
+            .toString()
+            .concat('-')
+            .concat(dayID.toString())
+        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
+        if (dailyUserTrack === null) {
+            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
+            dailyUserTrack.dailyUsdLBalance = ZERO_BD
+            dailyUserTrack.dailyXusdlBalance = ZERO_BD
+            dailyUserTrack.dailyEntryValue = ZERO_BD
+        }
+        dailyUserTrack.user = userTo.id
+        dailyUserTrack.dailyXusdlBalance = dailyUserTrack.dailyXusdlBalance.plus(valueInBD)
+        dailyUserTrack.dailyEntryValue = dailyUserTrack.dailyEntryValue.plus(xUSDL.pricePerShare.times(valueInBD))
+
         userTo.save()
+        hourlyUserTrack.save()
+        dailyUserTrack
 
         xUSDL.totalSupply = xUSDL.totalSupply.plus(valueInBD)
         xUSDL.save()
@@ -81,7 +113,40 @@ export function handleTransfer(event: Transfer): void {
         
         userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
+
+        let userHourID = userFrom.id
+            .toString()
+            .concat('-')
+            .concat(hourIndex.toString())
+        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
+        if (hourlyUserTrack === null) {
+            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
+            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
+            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
+            hourlyUserTrack.hourlyEntryValue = ZERO_BD
+        }
+        hourlyUserTrack.user = userFrom.id
+        hourlyUserTrack.hourlyXusdlBalance = hourlyUserTrack.hourlyXusdlBalance.minus(valueInBD)
+        hourlyUserTrack.hourlyEntryValue = hourlyUserTrack.hourlyEntryValue.minus(xUSDL.pricePerShare.times(valueInBD))
+
+        let userDailyID = userFrom.id
+            .toString()
+            .concat('-')
+            .concat(dayID.toString())
+        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
+        if (dailyUserTrack === null) {
+            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
+            dailyUserTrack.dailyUsdLBalance = ZERO_BD
+            dailyUserTrack.dailyXusdlBalance = ZERO_BD
+            dailyUserTrack.dailyEntryValue = ZERO_BD
+        }
+        dailyUserTrack.user = userFrom.id
+        dailyUserTrack.dailyXusdlBalance = dailyUserTrack.dailyXusdlBalance.minus(valueInBD)
+        dailyUserTrack.dailyEntryValue = dailyUserTrack.dailyEntryValue.minus(xUSDL.pricePerShare.times(valueInBD))
+
         userFrom.save()
+        hourlyUserTrack.save()
+        dailyUserTrack.save()
 
         xUSDL.totalSupply = xUSDL.totalSupply.minus(valueInBD);
         xUSDL.save()
@@ -96,7 +161,38 @@ export function handleTransfer(event: Transfer): void {
             userTo.xUSDLBalance = ZERO_BD
         }
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
+
+        let userHourID = userTo.id
+            .toString()
+            .concat('-')
+            .concat(hourIndex.toString())
+        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
+        if (hourlyUserTrack === null) {
+            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
+            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
+            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
+            hourlyUserTrack.hourlyEntryValue = ZERO_BD
+        }
+        hourlyUserTrack.user = userTo.id
+        hourlyUserTrack.hourlyXusdlBalance = hourlyUserTrack.hourlyXusdlBalance.plus(valueInBD)
+
+        let userDailyID = userTo.id
+            .toString()
+            .concat('-')
+            .concat(dayID.toString())
+        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
+        if (dailyUserTrack === null) {
+            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
+            dailyUserTrack.dailyUsdLBalance = ZERO_BD
+            dailyUserTrack.dailyXusdlBalance = ZERO_BD
+            dailyUserTrack.dailyEntryValue = ZERO_BD
+        }
+        dailyUserTrack.user = userTo.id
+        dailyUserTrack.dailyXusdlBalance = dailyUserTrack.dailyXusdlBalance.plus(valueInBD)
+
         userTo.save()
+        hourlyUserTrack.save()
+        dailyUserTrack.save()
 
         let userFrom = User.load(event.params.from.toHex())
         if (userFrom === null) {
@@ -107,7 +203,37 @@ export function handleTransfer(event: Transfer): void {
         }
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
 
+        let userFromHourID = userFrom.id
+            .toString()
+            .concat('-')
+            .concat(hourIndex.toString())
+        let hourlyUserFromTrack = HourlyUserTrack.load(userFromHourID.toString())
+        if (hourlyUserFromTrack === null) {
+            hourlyUserFromTrack = new HourlyUserTrack(userFromHourID.toString())
+            hourlyUserFromTrack.hourlyUsdLBalance = ZERO_BD
+            hourlyUserFromTrack.hourlyXusdlBalance = ZERO_BD
+            hourlyUserFromTrack.hourlyEntryValue = ZERO_BD
+        }
+        hourlyUserFromTrack.user = userFrom.id
+        hourlyUserFromTrack.hourlyXusdlBalance = hourlyUserFromTrack.hourlyXusdlBalance.minus(valueInBD)
+
+        let userFromDailyID = userFrom.id
+            .toString()
+            .concat('-')
+            .concat(dayID.toString())
+        let dailyUserFromTrack = DailyUserTrack.load(userFromDailyID.toString())
+        if (dailyUserFromTrack === null) {
+            dailyUserFromTrack = new DailyUserTrack(userFromDailyID.toString())
+            dailyUserFromTrack.dailyUsdLBalance = ZERO_BD
+            dailyUserFromTrack.dailyXusdlBalance = ZERO_BD
+            dailyUserFromTrack.dailyEntryValue = ZERO_BD
+        }
+        dailyUserFromTrack.user = userFrom.id
+        dailyUserFromTrack.dailyXusdlBalance = dailyUserFromTrack.dailyXusdlBalance.minus(valueInBD)
+
         userFrom.save()
+        hourlyUserFromTrack.save()
+        dailyUserFromTrack.save()
     }
 
     hourlyVolume.hourlyxUSDLTotalSupply = xUSDL.totalSupply;

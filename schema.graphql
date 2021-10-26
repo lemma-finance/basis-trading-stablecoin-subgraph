@@ -9,6 +9,8 @@ type User @entity{
   usdLBalance: BigDecimal!
   xUSDLBalance:BigDecimal!
   entryValue: BigDecimal!
+  hourlyUserData: [HourlyUserTrack!]! @derivedFrom(field: "user")
+  dailyUserData: [DailyUserTrack!]! @derivedFrom(field: "user")
 }
 type USDL @entity{
   id: ID!
@@ -22,6 +24,20 @@ type XUSDL @entity{
   totalSupply: BigDecimal!
   pricePerShare: BigDecimal!
   USDEarnings:  BigDecimal!
+}
+type HourlyUserTrack @entity{
+  id: ID!
+  user: User!
+  hourlyUsdLBalance: BigDecimal!
+  hourlyXusdlBalance:BigDecimal!
+  hourlyEntryValue: BigDecimal!
+}
+type DailyUserTrack @entity{
+  id: ID!
+  user: User!
+  dailyUsdLBalance: BigDecimal!
+  dailyXusdlBalance:BigDecimal!
+  dailyEntryValue: BigDecimal!
 }
 type HourlyVolume @entity{
   id: ID!

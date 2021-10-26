@@ -19,6 +19,8 @@ dataSources:
         - User
         - USDL
         - XUSDL
+        - HourlyUserTrack
+        - DailyUserTrack
         - DailyVolume
         - HourlyVolume
         - MonthlyVolume
@@ -67,6 +69,8 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - XUSDL
+        - HourlyUserTrack
+        - DailyUserTrack
         - DailyVolume
         - HourlyVolume
         - MonthlyVolume
