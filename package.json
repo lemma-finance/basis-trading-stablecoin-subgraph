@@ -4,6 +4,7 @@
   "scripts": {
     "prepare:local": "mustache config/local.json subgraph.template.yaml > subgraph.yaml; mustache config/local.json const.template.ts > src/const.ts",
     "prepare:arb-rinkeby": "mustache config/arb-rinkeby.json subgraph.template.yaml > subgraph.yaml; mustache config/arb-rinkeby.json const.template.ts > src/const.ts",
+    "prepare:arb-one": "mustache config/arb-one.json subgraph.template.yaml > subgraph.yaml; mustache config/arb-one.json const.template.ts > src/const.ts",
     "build-contract": "solc contracts/Gravity.sol --abi -o abis --overwrite && solc contracts/Gravity.sol --bin -o bin --overwrite",
     "create": "graph create yashnaman/basisTradingStablecoinSubgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create yashnaman/basisTradingStablecoinSubgraph --node http://127.0.0.1:8020",
