@@ -1,9 +1,10 @@
 import { Transfer, Rebalance, FeesUpdated } from '../generated/USDLemma/USDLemma'
-import { TransferDone, User, USDL, XUSDL, 
-        HourlyUserTrack, DailyUserTrack, 
-        HourlyVolume, DailyVolume, MonthlyVolume, 
-        DailyAPY, WeeklyAPY, MonthlyAPY 
-    } from '../generated/schema'
+import {
+    TransferDone, User, USDL, XUSDL,
+    HourlyUserTrack, DailyUserTrack,
+    HourlyVolume, DailyVolume, MonthlyVolume,
+    DailyAPY, WeeklyAPY, MonthlyAPY
+} from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
 import { XUSDL_ADDRESS } from './const';
@@ -166,7 +167,7 @@ export function handleTransfer(event: Transfer): void {
             userTo.xUSDLBalance = ZERO_BD
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
-        
+
         let userHourID = userTo.id
             .toString()
             .concat('-')
@@ -293,7 +294,7 @@ export function handleTransfer(event: Transfer): void {
 //     gravatar.save()
 // }
 
-export function handleRebalance(event: Rebalance): void {    
+export function handleRebalance(event: Rebalance): void {
     const usdlId = "1";
     let xUSDL = XUSDL.load(usdlId)
     if (xUSDL === null) {
@@ -332,21 +333,21 @@ export function handleRebalance(event: Rebalance): void {
     }
 
     dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(valueInBD);
-    
+
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
         if (dailyAPYs.avgUSDLBalOfXusdlContract === ZERO_BD) {
             dailyAPYs.avgUSDLBalOfXusdlContract = usdlBalanceForXusdlContract
         } else {
-            dailyAPYs.avgUSDLBalOfXusdlContract = 
-                    dailyAPYs.avgUSDLBalOfXusdlContract
+            dailyAPYs.avgUSDLBalOfXusdlContract =
+                dailyAPYs.avgUSDLBalOfXusdlContract
                     .plus(usdlBalanceForXusdlContract)
-                    .div(BigDecimal.fromString('2')) 
+                    .div(BigDecimal.fromString('2'))
         }
 
         // DAILY APY = (daily USD earnings / avg USDL balance of xUSDL) * 100 * 365
-        dailyAPYs.dailyApy = 
-                (dailyAPYs.dailyUSDEarnings
+        dailyAPYs.dailyApy =
+            (dailyAPYs.dailyUSDEarnings
                 .div(dailyAPYs.avgUSDLBalOfXusdlContract))
                 .times(BigDecimal.fromString('100'))
                 .times(BigDecimal.fromString('365'))
@@ -366,21 +367,21 @@ export function handleRebalance(event: Rebalance): void {
     }
 
     weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(valueInBD);
-    
+
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
         if (weeklyAPYs.avgUSDLBalOfXusdlContract === ZERO_BD) {
             weeklyAPYs.avgUSDLBalOfXusdlContract = usdlBalanceForXusdlContract
         } else {
-            weeklyAPYs.avgUSDLBalOfXusdlContract = 
-                    weeklyAPYs.avgUSDLBalOfXusdlContract
+            weeklyAPYs.avgUSDLBalOfXusdlContract =
+                weeklyAPYs.avgUSDLBalOfXusdlContract
                     .plus(usdlBalanceForXusdlContract)
-                    .div(BigDecimal.fromString('2')) 
+                    .div(BigDecimal.fromString('2'))
         }
 
         // Weekly APY = (weekly USD earnings / avg USDL balance of xUSDL) * 100 * 52.14
-        weeklyAPYs.weeklyApy = 
-                (weeklyAPYs.weeklyUSDEarnings
+        weeklyAPYs.weeklyApy =
+            (weeklyAPYs.weeklyUSDEarnings
                 .div(weeklyAPYs.avgUSDLBalOfXusdlContract))
                 .times(BigDecimal.fromString('100'))
                 .times(BigDecimal.fromString('52.14'))
@@ -400,21 +401,21 @@ export function handleRebalance(event: Rebalance): void {
     }
 
     monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(valueInBD);
-    
+
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
         if (monthlyAPYs.avgUSDLBalOfXusdlContract === ZERO_BD) {
             monthlyAPYs.avgUSDLBalOfXusdlContract = usdlBalanceForXusdlContract
         } else {
-            monthlyAPYs.avgUSDLBalOfXusdlContract = 
-                    monthlyAPYs.avgUSDLBalOfXusdlContract
+            monthlyAPYs.avgUSDLBalOfXusdlContract =
+                monthlyAPYs.avgUSDLBalOfXusdlContract
                     .plus(usdlBalanceForXusdlContract)
-                    .div(BigDecimal.fromString('2')) 
+                    .div(BigDecimal.fromString('2'))
         }
 
         // monthly APY = (monthly USD earnings / avg USDL balance of xUSDL) * 100 * 12
-        monthlyAPYs.monthlyApy = 
-                (monthlyAPYs.monthlyUSDEarnings
+        monthlyAPYs.monthlyApy =
+            (monthlyAPYs.monthlyUSDEarnings
                 .div(monthlyAPYs.avgUSDLBalOfXusdlContract))
                 .times(BigDecimal.fromString('100'))
                 .times(BigDecimal.fromString('12'))
@@ -433,6 +434,7 @@ export function handleFeesUpdated(event: FeesUpdated): void {
         usdl.multiplier = ZERO_BD
         usdl.fees = ZERO_BD
     }
-    usdl.fees = BigDecimal.fromString(fees.toString())
+    const BI_4 = BigInt.fromI32(4)//fees are in bps
+    usdl.fees = convertToDecimal(fees, BI_4)
     usdl.save()
 }
