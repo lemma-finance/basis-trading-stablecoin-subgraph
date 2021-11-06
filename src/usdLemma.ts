@@ -6,7 +6,7 @@ import {
     DailyAPY, WeeklyAPY, MonthlyAPY
 } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
-import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
+import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS } from './const';
 
 export function handleTransfer(event: Transfer): void {
@@ -266,14 +266,13 @@ export function handleTransfer(event: Transfer): void {
     if (xUSDL === null) {
         xUSDL = new XUSDL(xUSDLId)
         xUSDL.totalSupply = ZERO_BD
-        xUSDL.pricePerShare = ZERO_BD
+        xUSDL.pricePerShare = ONE_BD
     }
 
     if (xUSDL.totalSupply.notEqual(ZERO_BD)) {
         let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
         if (xUSDLUser !== null) {
             let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
-            pricePerShare = pricePerShare.truncate(18)
             xUSDL.pricePerShare = pricePerShare
         }
     }
@@ -314,8 +313,9 @@ export function handleRebalance(event: Rebalance): void {
 
     // USDEarning += convertToDecimal(amount (emitted in reBalance event)) * (1 - usdl.fees)
     const valueInBD = convertToDecimal(event.params.amount, BI_18)
-    const ONE = BigDecimal.fromString('1')
-    xUSDL.USDEarnings = xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))
+    const ONE = ONE_BD
+    let USDEarning = valueInBD.le(ZERO_BD) ? valueInBD : xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))//if negative then no fees
+    xUSDL.USDEarnings = USDEarning
     xUSDL.save()
 
     let timestamp = event.block.timestamp.toI32()
@@ -332,7 +332,7 @@ export function handleRebalance(event: Rebalance): void {
         dailyAPYs.dailyApy = ZERO_BD
     }
 
-    dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(valueInBD);
+    dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(USDEarning);
 
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
@@ -366,7 +366,7 @@ export function handleRebalance(event: Rebalance): void {
         weeklyAPYs.weeklyApy = ZERO_BD
     }
 
-    weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(valueInBD);
+    weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(USDEarning);
 
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance
@@ -400,7 +400,7 @@ export function handleRebalance(event: Rebalance): void {
         monthlyAPYs.monthlyApy = ZERO_BD
     }
 
-    monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(valueInBD);
+    monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(USDEarning);
 
     if (xUSDLUser !== null) {
         const usdlBalanceForXusdlContract = xUSDLUser.usdLBalance

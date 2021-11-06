@@ -1,7 +1,7 @@
 import { Deposit, Transfer } from '../generated/XUSDL/XUSDL'
 import { XUSDL, User, HourlyUserTrack, DailyUserTrack, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
-import { convertToDecimal, ZERO_BD, BI_18 } from "./utils";
+import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS } from './const';
 
 export function handleDeposit(event: Deposit): void {
@@ -47,7 +47,7 @@ export function handleTransfer(event: Transfer): void {
     if (xUSDL === null) {
         xUSDL = new XUSDL(usdlId)
         xUSDL.totalSupply = ZERO_BD
-        xUSDL.pricePerShare = ZERO_BD
+        xUSDL.pricePerShare = ONE_BD
     }
     const valueInBD = convertToDecimal(event.params.value, BI_18)
 
@@ -110,7 +110,7 @@ export function handleTransfer(event: Transfer): void {
             userFrom.xUSDLBalance = ZERO_BD
             userFrom.entryValue = ZERO_BD
         }
-        
+
         userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
 
@@ -160,7 +160,9 @@ export function handleTransfer(event: Transfer): void {
             userTo.xUSDLBalance = ZERO_BD
             userTo.xUSDLBalance = ZERO_BD
         }
+        userTo.entryValue = userTo.entryValue.plus(xUSDL.pricePerShare.times(valueInBD))
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
+
 
         let userHourID = userTo.id
             .toString()
@@ -201,6 +203,7 @@ export function handleTransfer(event: Transfer): void {
             userFrom.xUSDLBalance = ZERO_BD
             userFrom.xUSDLBalance = ZERO_BD
         }
+        userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
 
         let userFromHourID = userFrom.id
