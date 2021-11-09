@@ -8,7 +8,7 @@ dataSources:
     name: USDLemma
     network: mainnet
     source:
-      address: "0xFD2Cf3b56a73c75A7535fFe44EBABe7723c64719"
+      address: "0x998abeb3E57409262aE5b751f60747921B33613E"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -42,7 +42,7 @@ dataSources:
     name: MCDEXLemma
     network: mainnet
     source:
-      address: "0xf5c4a909455C00B99A90d93b48736F3196DB5621"
+      address: "0xf5059a5D33d5853360D16C683c16e67980206f36"
       abi: MCDEXLemma
     mapping:
       kind: ethereum/events
@@ -61,7 +61,7 @@ dataSources:
     name: XUSDL
     network: mainnet
     source:
-      address: "0x666D0c3da3dBc946D5128D06115bb4eed4595580"
+      address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
       abi: XUSDL
     mapping:
       kind: ethereum/events

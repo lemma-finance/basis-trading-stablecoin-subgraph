@@ -9,6 +9,7 @@ type User @entity{
   usdLBalance: BigDecimal!
   xUSDLBalance:BigDecimal!
   entryValue: BigDecimal!
+  unlockBlock: BigInt!
   hourlyUserData: [HourlyUserTrack!]! @derivedFrom(field: "user")
   dailyUserData: [DailyUserTrack!]! @derivedFrom(field: "user")
 }
@@ -24,6 +25,7 @@ type XUSDL @entity{
   totalSupply: BigDecimal!
   pricePerShare: BigDecimal!
   USDEarnings:  BigDecimal!
+  minimumLock: BigInt!
 }
 type HourlyUserTrack @entity{
   id: ID!

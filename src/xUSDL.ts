@@ -1,11 +1,21 @@
-import { Deposit, Transfer } from '../generated/XUSDL/XUSDL'
+import { Deposit, Transfer, UpdateMinimumLock } from '../generated/XUSDL/XUSDL'
 import { XUSDL, User, HourlyUserTrack, DailyUserTrack, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS } from './const';
 
 export function handleDeposit(event: Deposit): void {
-
+    const usdlId = "1";
+    let xUSDL = XUSDL.load(usdlId)
+    if (xUSDL === null) {
+        xUSDL = new XUSDL(usdlId)
+        xUSDL.pricePerShare = ONE_BD
+    }
+    let user = User.load(event.params.user.toHex())
+    if (user === null) {
+        user = new User(event.params.user.toHex())
+    }
+    user.unlockBlock = event.block.number + xUSDL.minimumLock;
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -249,15 +259,12 @@ export function handleTransfer(event: Transfer): void {
     monthlyVolume.save()
 
 }
-
-// export function handleUpdatedGravatar(event: UpdatedGravatar): void {
-//     let id = event.params.id.toHex()
-//     let gravatar = Gravatar.load(id)
-//     if (gravatar === null) {
-//         gravatar = new Gravatar(id)
-//     }
-//     gravatar.owner = event.params.owner
-//     gravatar.displayName = event.params.displayName
-//     gravatar.imageUrl = event.params.imageUrl
-//     gravatar.save()
-// }
+export function handleUpdateMinimumLock(event: UpdateMinimumLock): void {
+    const usdlId = "1";
+    let xUSDL = XUSDL.load(usdlId)
+    if (xUSDL === null) {
+        xUSDL = new XUSDL(usdlId)
+        xUSDL.pricePerShare = ONE_BD
+    }
+    xUSDL.minimumLock = event.params.newLock
+}
