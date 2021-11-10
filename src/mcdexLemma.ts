@@ -1,7 +1,7 @@
 import { MaxPositionUpdated } from '../generated/MCDEXLemma/MCDEXLemma'
 import { USDL } from '../generated/schema'
 import { BigDecimal } from '@graphprotocol/graph-ts';
-import { ZERO_BD } from "./utils";
+import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 
 export function handleMaxPositionUpdated(event: MaxPositionUpdated): void {
     const maxPos = event.params.maxPos
@@ -9,11 +9,8 @@ export function handleMaxPositionUpdated(event: MaxPositionUpdated): void {
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
         usdl = new USDL(usdlId)
-        usdl.totalSupply = ZERO_BD
-        usdl.multiplier = ZERO_BD
-        usdl.fees = ZERO_BD
-        usdl.maxCapacity = ZERO_BD
+        usdl.multiplier = ONE_BD
     }
-    usdl.maxCapacity = BigDecimal.fromString(maxPos.toString())
+    usdl.maxCapacity = convertToDecimal(maxPos, BI_18)
     usdl.save()
 }
