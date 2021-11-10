@@ -2,7 +2,7 @@ import { Deposit, Transfer, UpdateMinimumLock } from '../generated/XUSDL/XUSDL'
 import { XUSDL, User, HourlyUserTrack, DailyUserTrack, HourlyVolume, DailyVolume, MonthlyVolume } from '../generated/schema'
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
-import { XUSDL_ADDRESS } from './const';
+import { XUSDL_ADDRESS, LEMMA_ROUTER_ADDRESS } from './const';
 
 export function handleDeposit(event: Deposit): void {
     const usdlId = "1";
@@ -15,7 +15,11 @@ export function handleDeposit(event: Deposit): void {
     if (user === null) {
         user = new User(event.params.user.toHex())
     }
-    user.unlockBlock = event.block.number + xUSDL.minimumLock;
+    const lemmaRouter = Address.fromString(LEMMA_ROUTER_ADDRESS)
+    if (user.id !== lemmaRouter.toHex()) {
+        user.unlockBlock = event.block.number + xUSDL.minimumLock;
+        user.save()
+    }
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -215,6 +219,15 @@ export function handleTransfer(event: Transfer): void {
         }
         userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
+
+        //handle the minimum lock
+        //if transferred from router to some address then change the lock up time for that address
+        const lemmaRouter = Address.fromString(LEMMA_ROUTER_ADDRESS)
+        if (userFrom.id === lemmaRouter.toHex()) {
+            userTo.unlockBlock = event.block.number + xUSDL.minimumLock;
+            userTo.save()
+        }
+
 
         let userFromHourID = userFrom.id
             .toString()
