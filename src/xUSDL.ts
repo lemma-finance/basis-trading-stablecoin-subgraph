@@ -15,8 +15,8 @@ export function handleDeposit(event: Deposit): void {
     if (user === null) {
         user = new User(event.params.user.toHex())
     }
-    const lemmaRouter = Address.fromString(LEMMA_ROUTER_ADDRESS)
-    if (user.id !== lemmaRouter.toHex()) {
+    const lemmaRouterUser = new User(Address.fromString(LEMMA_ROUTER_ADDRESS).toHex())
+    if (user.id.toString() != lemmaRouterUser.id.toString()) {
         user.unlockBlock = event.block.number + xUSDL.minimumLock;
         user.save()
     }
@@ -171,8 +171,6 @@ export function handleTransfer(event: Transfer): void {
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.xUSDLBalance = ZERO_BD
-            userTo.xUSDLBalance = ZERO_BD
         }
         userTo.entryValue = userTo.entryValue.plus(xUSDL.pricePerShare.times(valueInBD))
         userTo.xUSDLBalance = userTo.xUSDLBalance.plus(valueInBD)
@@ -206,7 +204,7 @@ export function handleTransfer(event: Transfer): void {
         dailyUserTrack.user = userTo.id
         dailyUserTrack.dailyXusdlBalance = dailyUserTrack.dailyXusdlBalance.plus(valueInBD)
 
-        userTo.save()
+        // userTo.save()
         hourlyUserTrack.save()
         dailyUserTrack.save()
 
@@ -214,19 +212,17 @@ export function handleTransfer(event: Transfer): void {
         if (userFrom === null) {
             //not possible
             userFrom = new User(event.params.to.toHex())
-            userFrom.xUSDLBalance = ZERO_BD
-            userFrom.xUSDLBalance = ZERO_BD
         }
         userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
         userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
 
         //handle the minimum lock
         //if transferred from router to some address then change the lock up time for that address
-        const lemmaRouter = Address.fromString(LEMMA_ROUTER_ADDRESS)
-        if (userFrom.id === lemmaRouter.toHex()) {
+        const lemmaRouterUser = new User(Address.fromString(LEMMA_ROUTER_ADDRESS).toHex())
+        if (userFrom.id.toString() == lemmaRouterUser.id.toString()) {
             userTo.unlockBlock = event.block.number + xUSDL.minimumLock;
-            userTo.save()
         }
+        userTo.save()
 
 
         let userFromHourID = userFrom.id
