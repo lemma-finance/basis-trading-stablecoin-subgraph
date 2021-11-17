@@ -24,7 +24,7 @@ dataSources:
         - DailyVolume
         - HourlyVolume
         - MonthlyVolume
-        - DailyAPY 
+        - DailyAPY
         - WeeklyAPY
         - MonthlyAPY
       abis:
@@ -82,4 +82,6 @@ dataSources:
           handler: handleTransfer
         - event: Deposit(indexed address,uint256)
           handler: handleDeposit
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
       file: ./src/xUSDL.ts

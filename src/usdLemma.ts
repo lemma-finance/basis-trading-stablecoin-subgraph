@@ -70,8 +70,7 @@ export function handleTransfer(event: Transfer): void {
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.usdLBalance = ZERO_BD
-            userTo.xUSDLBalance = ZERO_BD
+
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
 
@@ -82,9 +81,6 @@ export function handleTransfer(event: Transfer): void {
         let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
         if (hourlyUserTrack === null) {
             hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
-            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
-            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
-            hourlyUserTrack.hourlyEntryValue = ZERO_BD
         }
         hourlyUserTrack.user = userTo.id
         hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.plus(valueInBD)
@@ -96,9 +92,7 @@ export function handleTransfer(event: Transfer): void {
         let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
         if (dailyUserTrack === null) {
             dailyUserTrack = new DailyUserTrack(userDailyID.toString())
-            dailyUserTrack.dailyUsdLBalance = ZERO_BD
-            dailyUserTrack.dailyXusdlBalance = ZERO_BD
-            dailyUserTrack.dailyEntryValue = ZERO_BD
+
         }
         dailyUserTrack.user = userTo.id
         dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.plus(valueInBD)
@@ -128,9 +122,7 @@ export function handleTransfer(event: Transfer): void {
         let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
         if (hourlyUserTrack === null) {
             hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
-            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
-            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
-            hourlyUserTrack.hourlyEntryValue = ZERO_BD
+
         }
         hourlyUserTrack.user = userFrom.id
         hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.minus(valueInBD)
@@ -142,9 +134,6 @@ export function handleTransfer(event: Transfer): void {
         let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
         if (dailyUserTrack === null) {
             dailyUserTrack = new DailyUserTrack(userDailyID.toString())
-            dailyUserTrack.dailyUsdLBalance = ZERO_BD
-            dailyUserTrack.dailyXusdlBalance = ZERO_BD
-            dailyUserTrack.dailyEntryValue = ZERO_BD
         }
         dailyUserTrack.user = userFrom.id
         dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.minus(valueInBD)
@@ -163,8 +152,7 @@ export function handleTransfer(event: Transfer): void {
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
             userTo = new User(event.params.to.toHex())
-            userTo.usdLBalance = ZERO_BD
-            userTo.xUSDLBalance = ZERO_BD
+
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
 
@@ -175,9 +163,7 @@ export function handleTransfer(event: Transfer): void {
         let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
         if (hourlyUserTrack === null) {
             hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
-            hourlyUserTrack.hourlyUsdLBalance = ZERO_BD
-            hourlyUserTrack.hourlyXusdlBalance = ZERO_BD
-            hourlyUserTrack.hourlyEntryValue = ZERO_BD
+
         }
         hourlyUserTrack.user = userTo.id
         hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.plus(valueInBD)
@@ -189,9 +175,7 @@ export function handleTransfer(event: Transfer): void {
         let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
         if (dailyUserTrack === null) {
             dailyUserTrack = new DailyUserTrack(userDailyID.toString())
-            dailyUserTrack.dailyUsdLBalance = ZERO_BD
-            dailyUserTrack.dailyXusdlBalance = ZERO_BD
-            dailyUserTrack.dailyEntryValue = ZERO_BD
+
         }
         dailyUserTrack.user = userTo.id
         dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.plus(valueInBD)
@@ -231,9 +215,6 @@ export function handleTransfer(event: Transfer): void {
         let dailyUserFromTrack = DailyUserTrack.load(userFromDailyID.toString())
         if (dailyUserFromTrack === null) {
             dailyUserFromTrack = new DailyUserTrack(userFromDailyID.toString())
-            dailyUserFromTrack.dailyUsdLBalance = ZERO_BD
-            dailyUserFromTrack.dailyXusdlBalance = ZERO_BD
-            dailyUserFromTrack.dailyEntryValue = ZERO_BD
         }
         dailyUserFromTrack.user = userFrom.id
         dailyUserFromTrack.dailyUsdLBalance = dailyUserFromTrack.dailyUsdLBalance.minus(valueInBD)
@@ -261,23 +242,6 @@ export function handleTransfer(event: Transfer): void {
         usdl1.save()
     }
 
-    const xUSDLId = "1";
-    let xUSDL = XUSDL.load(xUSDLId)
-    if (xUSDL === null) {
-        xUSDL = new XUSDL(xUSDLId)
-        xUSDL.totalSupply = ZERO_BD
-        xUSDL.pricePerShare = ONE_BD
-    }
-
-    if (xUSDL.totalSupply.notEqual(ZERO_BD)) {
-        let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
-        if (xUSDLUser !== null) {
-            let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
-            xUSDL.pricePerShare = pricePerShare
-        }
-    }
-    xUSDL.save()
-
 }
 
 
@@ -298,17 +262,12 @@ export function handleRebalance(event: Rebalance): void {
     let xUSDL = XUSDL.load(usdlId)
     if (xUSDL === null) {
         xUSDL = new XUSDL(usdlId)
-        xUSDL.totalSupply = ZERO_BD
-        xUSDL.pricePerShare = ZERO_BD
-        xUSDL.USDEarnings = ZERO_BD
+        xUSDL.pricePerShare = ONE_BD
     }
 
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
         usdl = new USDL(usdlId)
-        usdl.totalSupply = ZERO_BD
-        usdl.multiplier = ZERO_BD
-        usdl.fees = ZERO_BD
     }
 
     // USDEarning += convertToDecimal(amount (emitted in reBalance event)) * (1 - usdl.fees)
@@ -327,9 +286,6 @@ export function handleRebalance(event: Rebalance): void {
     let dailyAPYs = DailyAPY.load(dailyStartUnix.toString())
     if (dailyAPYs === null) {
         dailyAPYs = new DailyAPY(dailyStartUnix.toString())
-        dailyAPYs.dailyUSDEarnings = ZERO_BD
-        dailyAPYs.avgUSDLBalOfXusdlContract = ZERO_BD
-        dailyAPYs.dailyApy = ZERO_BD
     }
 
     dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(USDEarning);
@@ -421,6 +377,15 @@ export function handleRebalance(event: Rebalance): void {
                 .times(BigDecimal.fromString('12'))
     }
     monthlyAPYs.save()
+
+    //reBalance mints to/burns from xUSDL contract so it changes the pricePerShare
+    if (xUSDL.totalSupply.notEqual(ZERO_BD)) {
+        if (xUSDLUser !== null) {
+            let pricePerShare = xUSDLUser.usdLBalance.div(xUSDL.totalSupply)
+            xUSDL.pricePerShare = pricePerShare
+        }
+    }
+    xUSDL.save()
 
 }
 
