@@ -60,3 +60,39 @@ export function updateRolledUpData(event: ethereum.Event): void {
     dailyVolume.save()
     monthlyVolume.save()
 }
+
+export function updateUserRolledUpData(event: ethereum.Event, user: User): void {
+    let timestamp = event.block.timestamp.toI32()
+
+    // Hourly
+    let hourIndex = timestamp / 3600 // get unique hour within unix history
+    let userHourID = user.id
+        .toString()
+        .concat('-')
+        .concat(hourIndex.toString())
+    let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
+    if (hourlyUserTrack === null) {
+        hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
+    }
+    hourlyUserTrack.user = user.id
+    hourlyUserTrack.hourlyEntryValue = user.entryValue
+    hourlyUserTrack.hourlyUsdLBalance = user.usdLBalance
+    hourlyUserTrack.hourlyXusdlBalance = user.xUSDLBalance
+    hourlyUserTrack.save()
+
+    // Daily
+    let dayID = timestamp / 86400 // rounded
+    let userDailyID = user.id
+        .toString()
+        .concat('-')
+        .concat(dayID.toString())
+    let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
+    if (dailyUserTrack === null) {
+        dailyUserTrack = new DailyUserTrack(userDailyID.toString())
+    }
+    dailyUserTrack.user = user.id
+    dailyUserTrack.dailyEntryValue = user.entryValue
+    dailyUserTrack.dailyUsdLBalance = user.usdLBalance
+    dailyUserTrack.dailyXusdlBalance = user.xUSDLBalance
+    dailyUserTrack.save()
+}

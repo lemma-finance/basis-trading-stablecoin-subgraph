@@ -8,16 +8,9 @@ import {
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS } from './const';
-import { updateRolledUpData } from "./rolledUpUpdates"
+import { updateRolledUpData, updateUserRolledUpData } from "./rolledUpUpdates"
 
 export function handleTransfer(event: Transfer): void {
-
-    let timestamp = event.block.timestamp.toI32()
-
-    // Hourly
-    let hourIndex = timestamp / 3600 // get unique hour within unix history
-    // Daily
-    let dayID = timestamp / 86400 // rounded
 
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -43,33 +36,8 @@ export function handleTransfer(event: Transfer): void {
 
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
-
-        let userHourID = userTo.id
-            .toString()
-            .concat('-')
-            .concat(hourIndex.toString())
-        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
-        if (hourlyUserTrack === null) {
-            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
-        }
-        hourlyUserTrack.user = userTo.id
-        hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.plus(valueInBD)
-
-        let userDailyID = userTo.id
-            .toString()
-            .concat('-')
-            .concat(dayID.toString())
-        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
-        if (dailyUserTrack === null) {
-            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
-
-        }
-        dailyUserTrack.user = userTo.id
-        dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.plus(valueInBD)
-
         userTo.save()
-        hourlyUserTrack.save()
-        dailyUserTrack.save()
+        updateUserRolledUpData(event, userTo)
 
         usdl.totalSupply = usdl.totalSupply.plus(valueInBD)
         usdl.save()
@@ -83,41 +51,16 @@ export function handleTransfer(event: Transfer): void {
             userFrom.usdLBalance = ZERO_BD
             userFrom.xUSDLBalance = ZERO_BD
         }
-        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD);
-
-        let userHourID = userFrom.id
-            .toString()
-            .concat('-')
-            .concat(hourIndex.toString())
-        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
-        if (hourlyUserTrack === null) {
-            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
-
-        }
-        hourlyUserTrack.user = userFrom.id
-        hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.minus(valueInBD)
-
-        let userDailyID = userFrom.id
-            .toString()
-            .concat('-')
-            .concat(dayID.toString())
-        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
-        if (dailyUserTrack === null) {
-            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
-        }
-        dailyUserTrack.user = userFrom.id
-        dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.minus(valueInBD)
-
+        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD)
         userFrom.save()
-        hourlyUserTrack.save()
-        dailyUserTrack.save()
+        updateUserRolledUpData(event, userFrom)
 
-        usdl.totalSupply = usdl.totalSupply.minus(valueInBD);
+        usdl.totalSupply = usdl.totalSupply.minus(valueInBD)
         usdl.save()
+
     }
     //transfer
     else {
-
         // userTo
         let userTo = User.load(event.params.to.toHex())
         if (userTo === null) {
@@ -125,34 +68,8 @@ export function handleTransfer(event: Transfer): void {
 
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
-
-        let userToHourID = userTo.id
-            .toString()
-            .concat('-')
-            .concat(hourIndex.toString())
-        let hourlyToUserTrack = HourlyUserTrack.load(userToHourID.toString())
-        if (hourlyToUserTrack === null) {
-            hourlyToUserTrack = new HourlyUserTrack(userToHourID.toString())
-
-        }
-        hourlyToUserTrack.user = userTo.id
-        hourlyToUserTrack.hourlyUsdLBalance = hourlyToUserTrack.hourlyUsdLBalance.plus(valueInBD)
-
-        let userToDailyID = userTo.id
-            .toString()
-            .concat('-')
-            .concat(dayID.toString())
-        let dailyToUserTrack = DailyUserTrack.load(userToDailyID.toString())
-        if (dailyToUserTrack === null) {
-            dailyToUserTrack = new DailyUserTrack(userToDailyID.toString())
-
-        }
-        dailyToUserTrack.user = userTo.id
-        dailyToUserTrack.dailyUsdLBalance = dailyToUserTrack.dailyUsdLBalance.plus(valueInBD)
-
         userTo.save()
-        hourlyToUserTrack.save()
-        dailyToUserTrack.save()
+        updateUserRolledUpData(event, userTo)
 
         // userFrom
         let userFrom = User.load(event.params.from.toHex())
@@ -162,33 +79,9 @@ export function handleTransfer(event: Transfer): void {
             userFrom.usdLBalance = ZERO_BD
             userFrom.xUSDLBalance = ZERO_BD
         }
-        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD);
-
-        let userFromHourID = userFrom.id
-            .toString()
-            .concat('-')
-            .concat(hourIndex.toString())
-        let hourlyUserFromTrack = HourlyUserTrack.load(userFromHourID.toString())
-        if (hourlyUserFromTrack === null) {
-            hourlyUserFromTrack = new HourlyUserTrack(userFromHourID.toString())
-        }
-        hourlyUserFromTrack.user = userFrom.id
-        hourlyUserFromTrack.hourlyUsdLBalance = hourlyUserFromTrack.hourlyUsdLBalance.minus(valueInBD)
-
-        let userFromDailyID = userFrom.id
-            .toString()
-            .concat('-')
-            .concat(dayID.toString())
-        let dailyUserFromTrack = DailyUserTrack.load(userFromDailyID.toString())
-        if (dailyUserFromTrack === null) {
-            dailyUserFromTrack = new DailyUserTrack(userFromDailyID.toString())
-        }
-        dailyUserFromTrack.user = userFrom.id
-        dailyUserFromTrack.dailyUsdLBalance = dailyUserFromTrack.dailyUsdLBalance.minus(valueInBD)
-
+        userFrom.usdLBalance = userFrom.usdLBalance.minus(valueInBD)
         userFrom.save()
-        hourlyUserFromTrack.save()
-        dailyUserFromTrack.save()
+        updateUserRolledUpData(event, userFrom)
     }
 
     let usdl1 = USDL.load(usdlId);
