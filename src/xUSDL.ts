@@ -32,7 +32,6 @@ export function handleDeposit(event: Deposit): void {
         }
     }
     xUSDL.save()
-    updateRolledUpData(event)
 }
 export function handleWithdraw(event: Withdraw): void {
     const xUSDLId = "1";
@@ -50,19 +49,10 @@ export function handleWithdraw(event: Withdraw): void {
         }
     }
     xUSDL.save()
-    updateRolledUpData(event)
 }
 
 
 export function handleTransfer(event: Transfer): void {
-
-    let timestamp = event.block.timestamp.toI32()
-
-    // Hourly
-    let hourIndex = timestamp / 3600 // get unique hour within unix history
-    // Daily
-    let dayID = timestamp / 86400 // rounded
-
     const usdlId = "1";
     let xUSDL = XUSDL.load(usdlId)
     if (xUSDL === null) {
