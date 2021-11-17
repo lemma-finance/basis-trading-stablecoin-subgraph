@@ -156,33 +156,33 @@ export function handleTransfer(event: Transfer): void {
         }
         userTo.usdLBalance = userTo.usdLBalance.plus(valueInBD)
 
-        let userHourID = userTo.id
+        let userToHourID = userTo.id
             .toString()
             .concat('-')
             .concat(hourIndex.toString())
-        let hourlyUserTrack = HourlyUserTrack.load(userHourID.toString())
-        if (hourlyUserTrack === null) {
-            hourlyUserTrack = new HourlyUserTrack(userHourID.toString())
+        let hourlyToUserTrack = HourlyUserTrack.load(userToHourID.toString())
+        if (hourlyToUserTrack === null) {
+            hourlyToUserTrack = new HourlyUserTrack(userToHourID.toString())
 
         }
-        hourlyUserTrack.user = userTo.id
-        hourlyUserTrack.hourlyUsdLBalance = hourlyUserTrack.hourlyUsdLBalance.plus(valueInBD)
+        hourlyToUserTrack.user = userTo.id
+        hourlyToUserTrack.hourlyUsdLBalance = hourlyToUserTrack.hourlyUsdLBalance.plus(valueInBD)
 
-        let userDailyID = userTo.id
+        let userToDailyID = userTo.id
             .toString()
             .concat('-')
             .concat(dayID.toString())
-        let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
-        if (dailyUserTrack === null) {
-            dailyUserTrack = new DailyUserTrack(userDailyID.toString())
+        let dailyToUserTrack = DailyUserTrack.load(userToDailyID.toString())
+        if (dailyToUserTrack === null) {
+            dailyToUserTrack = new DailyUserTrack(userToDailyID.toString())
 
         }
-        dailyUserTrack.user = userTo.id
-        dailyUserTrack.dailyUsdLBalance = dailyUserTrack.dailyUsdLBalance.plus(valueInBD)
+        dailyToUserTrack.user = userTo.id
+        dailyToUserTrack.dailyUsdLBalance = dailyToUserTrack.dailyUsdLBalance.plus(valueInBD)
 
         userTo.save()
-        hourlyUserTrack.save()
-        dailyUserTrack.save()
+        hourlyToUserTrack.save()
+        dailyToUserTrack.save()
 
         // userFrom
         let userFrom = User.load(event.params.from.toHex())
@@ -201,9 +201,6 @@ export function handleTransfer(event: Transfer): void {
         let hourlyUserFromTrack = HourlyUserTrack.load(userFromHourID.toString())
         if (hourlyUserFromTrack === null) {
             hourlyUserFromTrack = new HourlyUserTrack(userFromHourID.toString())
-            hourlyUserFromTrack.hourlyUsdLBalance = ZERO_BD
-            hourlyUserFromTrack.hourlyXusdlBalance = ZERO_BD
-            hourlyUserFromTrack.hourlyEntryValue = ZERO_BD
         }
         hourlyUserFromTrack.user = userFrom.id
         hourlyUserFromTrack.hourlyUsdLBalance = hourlyUserFromTrack.hourlyUsdLBalance.minus(valueInBD)
@@ -317,9 +314,6 @@ export function handleRebalance(event: Rebalance): void {
     let weeklyAPYs = WeeklyAPY.load(weeklyStartUnix.toString())
     if (weeklyAPYs === null) {
         weeklyAPYs = new WeeklyAPY(weeklyStartUnix.toString())
-        weeklyAPYs.weeklyUSDEarnings = ZERO_BD
-        weeklyAPYs.avgUSDLBalOfXusdlContract = ZERO_BD
-        weeklyAPYs.weeklyApy = ZERO_BD
     }
 
     weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(USDEarning);
@@ -351,9 +345,6 @@ export function handleRebalance(event: Rebalance): void {
     let monthlyAPYs = MonthlyAPY.load(monthlyStartUnix.toString())
     if (monthlyAPYs === null) {
         monthlyAPYs = new MonthlyAPY(monthlyStartUnix.toString())
-        monthlyAPYs.monthlyUSDEarnings = ZERO_BD
-        monthlyAPYs.avgUSDLBalOfXusdlContract = ZERO_BD
-        monthlyAPYs.monthlyApy = ZERO_BD
     }
 
     monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(USDEarning);

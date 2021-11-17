@@ -1,0 +1,1 @@
+//TODO: restructure and add all the hourly,daily,weekly,monthly updates here to make it easier to read and understand
