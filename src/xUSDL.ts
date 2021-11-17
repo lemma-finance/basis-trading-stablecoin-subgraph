@@ -124,9 +124,11 @@ export function handleTransfer(event: Transfer): void {
             userFrom.xUSDLBalance = ZERO_BD
             userFrom.entryValue = ZERO_BD
         }
+        const oldBalance = userFrom.xUSDLBalance
+        const updatedBalance = userFrom.xUSDLBalance.minus(valueInBD);
+        userFrom.entryValue = userFrom.entryValue.times(updatedBalance.div(oldBalance))
+        userFrom.xUSDLBalance = updatedBalance
 
-        userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
-        userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
 
         let userHourID = userFrom.id
             .toString()
@@ -213,8 +215,11 @@ export function handleTransfer(event: Transfer): void {
             //not possible
             userFrom = new User(event.params.to.toHex())
         }
-        userFrom.entryValue = userFrom.entryValue.minus(valueInBD.div(userFrom.xUSDLBalance))
-        userFrom.xUSDLBalance = userFrom.xUSDLBalance.minus(valueInBD);
+
+        const oldFromBalance = userFrom.xUSDLBalance
+        const updatedFromBalance = userFrom.xUSDLBalance.minus(valueInBD);
+        userFrom.entryValue = userFrom.entryValue.times(updatedFromBalance.div(oldFromBalance))
+        userFrom.xUSDLBalance = updatedFromBalance
 
         //handle the minimum lock
         //if transferred from router to some address then change the lock up time for that address
