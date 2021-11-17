@@ -3,6 +3,7 @@ import { XUSDL, User, HourlyUserTrack, DailyUserTrack, HourlyVolume, DailyVolume
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS, LEMMA_ROUTER_ADDRESS } from './const';
+import { updateRolledUpData } from './rolledUpUpdates';
 
 export function handleDeposit(event: Deposit): void {
     const usdlId = "1";
@@ -31,6 +32,7 @@ export function handleDeposit(event: Deposit): void {
         }
     }
     xUSDL.save()
+    updateRolledUpData(event)
 }
 export function handleWithdraw(event: Withdraw): void {
     const xUSDLId = "1";
@@ -48,6 +50,7 @@ export function handleWithdraw(event: Withdraw): void {
         }
     }
     xUSDL.save()
+    updateRolledUpData(event)
 }
 
 
@@ -57,27 +60,8 @@ export function handleTransfer(event: Transfer): void {
 
     // Hourly
     let hourIndex = timestamp / 3600 // get unique hour within unix history
-    let hourStartUnix = hourIndex * 3600 // want the rounded effect
-    let hourlyVolume = HourlyVolume.load(hourStartUnix.toString())
-    if (hourlyVolume === null) {
-        hourlyVolume = new HourlyVolume(hourStartUnix.toString())
-    }
-
     // Daily
     let dayID = timestamp / 86400 // rounded
-    let dayStartTimestamp = dayID * 86400
-    let dailyVolume = DailyVolume.load(dayStartTimestamp.toString())
-    if (dailyVolume === null) {
-        dailyVolume = new DailyVolume(dayStartTimestamp.toString())
-    }
-
-    // Monthly
-    let monthID = timestamp / 2592000 // rounded
-    let monthStartTimestamp = monthID * 2592000
-    let monthlyVolume = MonthlyVolume.load(monthStartTimestamp.toString())
-    if (monthlyVolume === null) {
-        monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
-    }
 
     const usdlId = "1";
     let xUSDL = XUSDL.load(usdlId)
@@ -260,16 +244,7 @@ export function handleTransfer(event: Transfer): void {
         hourlyUserFromTrack.save()
         dailyUserFromTrack.save()
     }
-
-    hourlyVolume.hourlyxUSDLTotalSupply = xUSDL.totalSupply;
-    hourlyVolume.save()
-
-    dailyVolume.dailyxUSDLTotalSupply = xUSDL.totalSupply
-    dailyVolume.save()
-
-    monthlyVolume.monthlyxUSDLTotalSupply = xUSDL.totalSupply
-    monthlyVolume.save()
-
+    updateRolledUpData(event)
 }
 export function handleUpdateMinimumLock(event: UpdateMinimumLock): void {
     const usdlId = "1";

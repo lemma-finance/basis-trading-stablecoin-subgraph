@@ -8,6 +8,7 @@ import {
 import { Address, BigInt, BigDecimal, ByteArray } from '@graphprotocol/graph-ts';
 import { convertToDecimal, ZERO_BD, BI_18, ONE_BD } from "./utils";
 import { XUSDL_ADDRESS } from './const';
+import { updateRolledUpData } from "./rolledUpUpdates"
 
 export function handleTransfer(event: Transfer): void {
 
@@ -15,33 +16,8 @@ export function handleTransfer(event: Transfer): void {
 
     // Hourly
     let hourIndex = timestamp / 3600 // get unique hour within unix history
-    let hourStartUnix = hourIndex * 3600 // want the rounded effect
-    let hourlyVolume = HourlyVolume.load(hourStartUnix.toString())
-    if (hourlyVolume === null) {
-        hourlyVolume = new HourlyVolume(hourStartUnix.toString())
-        hourlyVolume.hourlyxUSDLTotalSupply = ZERO_BD;
-        hourlyVolume.hourlyxUSDLTotalSupply = ZERO_BD
-    }
-
     // Daily
     let dayID = timestamp / 86400 // rounded
-    let dayStartTimestamp = dayID * 86400
-    let dailyVolume = DailyVolume.load(dayStartTimestamp.toString())
-    if (dailyVolume === null) {
-        dailyVolume = new DailyVolume(dayStartTimestamp.toString())
-        dailyVolume.dailyUSDLTotalSupply = ZERO_BD;
-        dailyVolume.dailyUSDLTotalSupply = ZERO_BD
-    }
-
-    // Monthly
-    let monthID = timestamp / 2592000 // rounded
-    let monthStartTimestamp = monthID * 2592000
-    let monthlyVolume = MonthlyVolume.load(monthStartTimestamp.toString())
-    if (monthlyVolume === null) {
-        monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
-        monthlyVolume.monthlyUSDLTotalSupply = ZERO_BD;
-        monthlyVolume.monthlyxUSDLTotalSupply = ZERO_BD
-    }
 
     let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
     let transferDone = new TransferDone(id)
@@ -50,12 +26,6 @@ export function handleTransfer(event: Transfer): void {
     transferDone.value = event.params.value
     transferDone.save()
 
-    // let usdlAddress = event.transaction.to;
-    // let usdlId: string;
-    // if (usdlAddress !== null) {
-    //     usdlId = usdlAddress.toHex()
-    // }
-    //TODO: ideally the id should be the USDL address. Figure out how to get it from the graph config?
     const usdlId = "1";
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
@@ -221,15 +191,6 @@ export function handleTransfer(event: Transfer): void {
         dailyUserFromTrack.save()
     }
 
-    hourlyVolume.hourlyUSDLTotalSupply = usdl.totalSupply;
-    hourlyVolume.save()
-
-    dailyVolume.dailyUSDLTotalSupply = usdl.totalSupply
-    dailyVolume.save()
-
-    monthlyVolume.monthlyUSDLTotalSupply = usdl.totalSupply
-    monthlyVolume.save()
-
     let usdl1 = USDL.load(usdlId);
     if (usdl1 !== null) {
         let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
@@ -238,21 +199,8 @@ export function handleTransfer(event: Transfer): void {
         }
         usdl1.save()
     }
-
+    updateRolledUpData(event)
 }
-
-
-// export function handleUpdatedGravatar(event: UpdatedGravatar): void {
-//     let id = event.params.id.toHex()
-//     let gravatar = Gravatar.load(id)
-//     if (gravatar === null) {
-//         gravatar = new Gravatar(id)
-//     }
-//     gravatar.owner = event.params.owner
-//     gravatar.displayName = event.params.displayName
-//     gravatar.imageUrl = event.params.imageUrl
-//     gravatar.save()
-// }
 
 export function handleRebalance(event: Rebalance): void {
     const usdlId = "1";
@@ -377,7 +325,7 @@ export function handleRebalance(event: Rebalance): void {
         }
     }
     xUSDL.save()
-
+    updateRolledUpData(event)
 }
 
 export function handleFeesUpdated(event: FeesUpdated): void {
@@ -394,3 +342,4 @@ export function handleFeesUpdated(event: FeesUpdated): void {
     usdl.fees = convertToDecimal(fees, BI_4)
     usdl.save()
 }
+
