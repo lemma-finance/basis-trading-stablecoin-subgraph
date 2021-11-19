@@ -130,8 +130,8 @@ export function updateAPYRolledUpData(event: ethereum.Event): void {
     dailyAPYs.save()
 
     // Weekly APY
-    let weeklyIndex = calcDayId(timestamp) // get unique weekly within unix history
-    let weeklyStartUnix = weeklyIndex * 86400 // want the rounded effect
+    let weeklyIndex = calcWeekId(timestamp) // get unique weekly within unix history
+    let weeklyStartUnix = weeklyIndex * 604800 // want the rounded effect
     let weeklyAPYs = WeeklyAPY.load(weeklyStartUnix.toString())
     if (weeklyAPYs === null) {
         weeklyAPYs = new WeeklyAPY(weeklyStartUnix.toString())
@@ -148,8 +148,8 @@ export function updateAPYRolledUpData(event: ethereum.Event): void {
     weeklyAPYs.save()
 
     // Monthly APY
-    let monthlyIndex = calcDayId(timestamp) // get unique monthly within unix history
-    let monthlyStartUnix = monthlyIndex * 86400 // want the rounded effect
+    let monthlyIndex = calcMonthId(timestamp) // get unique monthly within unix history
+    let monthlyStartUnix = monthlyIndex * 2592000 // want the rounded effect
     let monthlyAPYs = MonthlyAPY.load(monthlyStartUnix.toString())
     if (monthlyAPYs === null) {
         monthlyAPYs = new MonthlyAPY(monthlyStartUnix.toString())
@@ -188,6 +188,9 @@ function calcHourId(timestamp: number): number {
 }
 function calcDayId(timestamp: number): number {
     return timestamp / 86400
+}
+function calcWeekId(timestamp: number): number {
+    return timestamp / 604800
 }
 function calcMonthId(timestamp: number): number {
     return timestamp / 2592000
