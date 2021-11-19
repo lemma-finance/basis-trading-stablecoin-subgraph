@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: USDLemma
-    network: mainnet
+    network: arbitrum-one
     source:
-      address: "0x998abeb3E57409262aE5b751f60747921B33613E"
+      address: "0xdb41ab644AbcA7f5ac579A5Cf2F41e606C2d6abc"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -40,9 +40,9 @@ dataSources:
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
     name: MCDEXLemma
-    network: mainnet
+    network: arbitrum-one
     source:
-      address: "0xf5059a5D33d5853360D16C683c16e67980206f36"
+      address: "0x3092eD676e1C59ee5Ab6Eb4Bf19a11BcA84D67bd"
       abi: MCDEXLemma
     mapping:
       kind: ethereum/events
@@ -59,9 +59,9 @@ dataSources:
       file: ./src/mcdexLemma.ts
   - kind: ethereum/contract
     name: XUSDL
-    network: mainnet
+    network: arbitrum-one
     source:
-      address: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf"
+      address: "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7"
       abi: XUSDL
     mapping:
       kind: ethereum/events

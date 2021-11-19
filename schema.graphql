@@ -60,18 +60,18 @@ type MonthlyVolume @entity{
 type DailyAPY @entity{
   id: ID!
   dailyUSDEarnings: BigDecimal!
-  avgUSDLBalOfXusdlContract: BigDecimal!
+  avgUSDEarningPerUSDL:BigDecimal!
   dailyApy: BigDecimal!
 }
 type WeeklyAPY @entity{
   id: ID!
   weeklyUSDEarnings: BigDecimal!
-  avgUSDLBalOfXusdlContract: BigDecimal!
+  avgUSDEarningPerUSDL:BigDecimal!
   weeklyApy: BigDecimal!
 }
 type MonthlyAPY @entity{
   id: ID!
   monthlyUSDEarnings: BigDecimal!
-  avgUSDLBalOfXusdlContract: BigDecimal!
+  avgUSDEarningPerUSDL:BigDecimal!
   monthlyApy: BigDecimal!
 }
