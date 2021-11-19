@@ -1,6 +1,6 @@
 import { Transfer, Rebalance, FeesUpdated } from '../generated/USDLemma/USDLemma'
 import {
-    TransferDone, User, USDL, XUSDL,
+    User, USDL, XUSDL,
     HourlyUserTrack, DailyUserTrack,
     HourlyVolume, DailyVolume, MonthlyVolume,
     DailyAPY, WeeklyAPY, MonthlyAPY
@@ -11,13 +11,6 @@ import { XUSDL_ADDRESS } from './const';
 import { updateRolledUpData, updateUserRolledUpData, updateAPYRolledUpData } from "./rolledUpUpdates"
 
 export function handleTransfer(event: Transfer): void {
-
-    let id = event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-    let transferDone = new TransferDone(id)
-    transferDone.from = event.params.from
-    transferDone.to = event.params.to
-    transferDone.value = event.params.value
-    transferDone.save()
 
     const usdlId = "1";
     let usdl = USDL.load(usdlId)

@@ -15,7 +15,6 @@ dataSources:
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - TransferDone
         - User
         - USDL
         - XUSDL

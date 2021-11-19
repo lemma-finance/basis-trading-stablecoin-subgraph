@@ -1,5 +1,5 @@
 import {
-    TransferDone, User, USDL, XUSDL,
+    User, USDL, XUSDL,
     HourlyUserTrack, DailyUserTrack,
     HourlyVolume, DailyVolume, MonthlyVolume,
     DailyAPY, WeeklyAPY, MonthlyAPY
