@@ -1,5 +1,3 @@
-//TODO: restructure and add all the hourly,daily,weekly,monthly updates here to make it easier to read and understand
-
 import {
     TransferDone, User, USDL, XUSDL,
     HourlyUserTrack, DailyUserTrack,
@@ -97,7 +95,7 @@ export function updateUserRolledUpData(event: ethereum.Event, user: User): void 
     dailyUserTrack.dailyXusdlBalance = user.xUSDLBalance
     dailyUserTrack.save()
 }
-export function updateAPYRolledUpData(event: ethereum.Event): void {
+export function updateAPYRolledUpData(event: ethereum.Event, usdEarnings: BigDecimal): void {
     const usdlId = "1";
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
@@ -118,7 +116,7 @@ export function updateAPYRolledUpData(event: ethereum.Event): void {
     if (dailyAPYs === null) {
         dailyAPYs = new DailyAPY(dailyStartUnix.toString())
     }
-    dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(xUSDL.USDEarnings);
+    dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         dailyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(dailyAPYs.avgUSDEarningPerUSDL, dailyAPYs.dailyUSDEarnings, xUSDLUser.usdLBalance)
@@ -136,7 +134,7 @@ export function updateAPYRolledUpData(event: ethereum.Event): void {
     if (weeklyAPYs === null) {
         weeklyAPYs = new WeeklyAPY(weeklyStartUnix.toString())
     }
-    weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(xUSDL.USDEarnings);
+    weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         weeklyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(weeklyAPYs.avgUSDEarningPerUSDL, weeklyAPYs.weeklyUSDEarnings, xUSDLUser.usdLBalance)
@@ -154,7 +152,7 @@ export function updateAPYRolledUpData(event: ethereum.Event): void {
     if (monthlyAPYs === null) {
         monthlyAPYs = new MonthlyAPY(monthlyStartUnix.toString())
     }
-    monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(xUSDL.USDEarnings);
+    monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         monthlyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(monthlyAPYs.avgUSDEarningPerUSDL, monthlyAPYs.monthlyUSDEarnings, xUSDLUser.usdLBalance)

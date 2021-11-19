@@ -126,7 +126,7 @@ export function handleRebalance(event: Rebalance): void {
     }
     xUSDL.save()
     updateRolledUpData(event)
-    updateAPYRolledUpData(event)
+    updateAPYRolledUpData(event, USDEarning)
 }
 
 export function handleFeesUpdated(event: FeesUpdated): void {
