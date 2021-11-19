@@ -112,7 +112,7 @@ export function handleRebalance(event: Rebalance): void {
     const valueInBD = convertToDecimal(event.params.amount, BI_18)
     const ONE = ONE_BD
     let USDEarning = valueInBD.le(ZERO_BD) ? valueInBD : xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))//if negative then no fees
-    xUSDL.USDEarnings = USDEarning
+    xUSDL.USDEarnings = xUSDL.USDEarnings.plus(USDEarning)
     xUSDL.save()
 
     let timestamp = event.block.timestamp.toI32()
