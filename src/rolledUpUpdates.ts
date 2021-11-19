@@ -25,26 +25,23 @@ export function updateRolledUpData(event: ethereum.Event): void {
 
     // Hourly
     let hourIndex = calcHourId(timestamp)// get unique hour within unix history
-    let hourStartUnix = hourIndex * 3600 // want the rounded effect
-    let hourlyVolume = HourlyVolume.load(hourStartUnix.toString())
+    let hourlyVolume = HourlyVolume.load(hourIndex.toString())
     if (hourlyVolume === null) {
-        hourlyVolume = new HourlyVolume(hourStartUnix.toString())
+        hourlyVolume = new HourlyVolume(hourIndex.toString())
     }
 
     // Daily
-    let dayID = calcDayId(timestamp) // rounded
-    let dayStartTimestamp = dayID * 86400
-    let dailyVolume = DailyVolume.load(dayStartTimestamp.toString())
+    let dayIndex = calcDayId(timestamp) // rounded
+    let dailyVolume = DailyVolume.load(dayIndex.toString())
     if (dailyVolume === null) {
-        dailyVolume = new DailyVolume(dayStartTimestamp.toString())
+        dailyVolume = new DailyVolume(dayIndex.toString())
     }
 
     // Monthly
-    let monthID = calcMonthId(timestamp) // rounded
-    let monthStartTimestamp = monthID * 2592000
-    let monthlyVolume = MonthlyVolume.load(monthStartTimestamp.toString())
+    let monthIndex = calcMonthId(timestamp) // rounded
+    let monthlyVolume = MonthlyVolume.load(monthIndex.toString())
     if (monthlyVolume === null) {
-        monthlyVolume = new MonthlyVolume(monthStartTimestamp.toString())
+        monthlyVolume = new MonthlyVolume(monthIndex.toString())
     }
 
     hourlyVolume.hourlyUSDLTotalSupply = usdl.totalSupply
@@ -80,11 +77,11 @@ export function updateUserRolledUpData(event: ethereum.Event, user: User): void 
     hourlyUserTrack.save()
 
     // Daily
-    let dayID = calcDayId(timestamp) // rounded
+    let dayIndex = calcDayId(timestamp) // rounded
     let userDailyID = user.id
         .toString()
         .concat('-')
-        .concat(dayID.toString())
+        .concat(dayIndex.toString())
     let dailyUserTrack = DailyUserTrack.load(userDailyID.toString())
     if (dailyUserTrack === null) {
         dailyUserTrack = new DailyUserTrack(userDailyID.toString())
@@ -110,51 +107,48 @@ export function updateAPYRolledUpData(event: ethereum.Event, usdEarnings: BigDec
     let xUSDLUser = User.load(Address.fromString(XUSDL_ADDRESS).toHex())
 
     // Daily APY
-    let dailyIndex = calcDayId(timestamp) // get unique daily within unix history
-    let dailyAPYs = DailyAPY.load(dailyIndex.toString())
+    let dayIndex = calcDayId(timestamp) // get unique daily within unix history
+    let dailyAPYs = DailyAPY.load(dayIndex.toString())
     if (dailyAPYs === null) {
-        dailyAPYs = new DailyAPY(dailyIndex.toString())
+        dailyAPYs = new DailyAPY(dayIndex.toString())
     }
     dailyAPYs.dailyUSDEarnings = dailyAPYs.dailyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         dailyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(dailyAPYs.avgUSDEarningPerUSDL, dailyAPYs.dailyUSDEarnings, xUSDLUser.usdLBalance)
-        // DAILY APY = (daily USD earnings / avg USDL balance of xUSDL) * 100 * 365
-        const timePerYear = BigDecimal.fromString("1").div(BigDecimal.fromString("365"));
+        const timePerYear = BigDecimal.fromString("365");
         dailyAPYs.dailyApy =
             calcAPY(dailyAPYs.avgUSDEarningPerUSDL, timePerYear)
     }
     dailyAPYs.save()
 
     // Weekly APY
-    let weeklyIndex = calcWeekId(timestamp) // get unique weekly within unix history
-    let weeklyAPYs = WeeklyAPY.load(weeklyIndex.toString())
+    let weekIndex = calcWeekId(timestamp) // get unique weekly within unix history
+    let weeklyAPYs = WeeklyAPY.load(weekIndex.toString())
     if (weeklyAPYs === null) {
-        weeklyAPYs = new WeeklyAPY(weeklyIndex.toString())
+        weeklyAPYs = new WeeklyAPY(weekIndex.toString())
     }
     weeklyAPYs.weeklyUSDEarnings = weeklyAPYs.weeklyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         weeklyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(weeklyAPYs.avgUSDEarningPerUSDL, weeklyAPYs.weeklyUSDEarnings, xUSDLUser.usdLBalance)
-        // DAILY APY = (weekly USD earnings / avg USDL balance of xUSDL) * 100 * 365
-        const timePerYear = BigDecimal.fromString("1").div(BigDecimal.fromString("365"));
+        const timePerYear = BigDecimal.fromString("52.1429");
         weeklyAPYs.weeklyApy =
             calcAPY(weeklyAPYs.avgUSDEarningPerUSDL, timePerYear)
     }
     weeklyAPYs.save()
 
     // Monthly APY
-    let monthlyIndex = calcMonthId(timestamp) // get unique monthly within unix history
-    let monthlyAPYs = MonthlyAPY.load(monthlyIndex.toString())
+    let monthIndex = calcMonthId(timestamp) // get unique monthly within unix history
+    let monthlyAPYs = MonthlyAPY.load(monthIndex.toString())
     if (monthlyAPYs === null) {
-        monthlyAPYs = new MonthlyAPY(monthlyIndex.toString())
+        monthlyAPYs = new MonthlyAPY(monthIndex.toString())
     }
     monthlyAPYs.monthlyUSDEarnings = monthlyAPYs.monthlyUSDEarnings.plus(usdEarnings)
 
     if (xUSDLUser !== null) {
         monthlyAPYs.avgUSDEarningPerUSDL = calcAvgUSDEarningPerUSDL(monthlyAPYs.avgUSDEarningPerUSDL, monthlyAPYs.monthlyUSDEarnings, xUSDLUser.usdLBalance)
-        // DAILY APY = (monthly USD earnings / avg USDL balance of xUSDL) * 100 * 365
-        const timePerYear = BigDecimal.fromString("1").div(BigDecimal.fromString("365"));
+        const timePerYear = BigDecimal.fromString("12");
         monthlyAPYs.monthlyApy =
             calcAPY(monthlyAPYs.avgUSDEarningPerUSDL, timePerYear)
     }
