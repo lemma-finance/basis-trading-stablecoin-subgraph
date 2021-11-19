@@ -9,6 +9,7 @@ type User @entity{
   usdLBalance: BigDecimal!
   xUSDLBalance:BigDecimal!
   entryValue: BigDecimal!
+  realizedEarnings: BigDecimal!
   unlockBlock: BigInt!
   hourlyUserData: [HourlyUserTrack!]! @derivedFrom(field: "user")
   dailyUserData: [DailyUserTrack!]! @derivedFrom(field: "user")
