@@ -82,11 +82,12 @@ export function handleTransfer(event: Transfer): void {
             //not possible
             userFrom = new User(event.params.to.toHex())
         }
+
+        const avgBuyPriceOfUser = userFrom.entryValue.div(valueInBD)
+        userFrom.realizedEarnings = userFrom.realizedEarnings.plus((xUSDL.pricePerShare.minus(avgBuyPriceOfUser)).times(valueInBD))
         const oldBalance = userFrom.xUSDLBalance
         const updatedBalance = userFrom.xUSDLBalance.minus(valueInBD);
         userFrom.entryValue = userFrom.entryValue.times(updatedBalance.div(oldBalance))
-        const avgBuyPriceOfUser = userFrom.entryValue.div(valueInBD)
-        userFrom.realizedEarnings = userFrom.realizedEarnings.plus((xUSDL.pricePerShare.minus(avgBuyPriceOfUser)).times(valueInBD))
         userFrom.xUSDLBalance = updatedBalance
         userFrom.save()
         updateUserRolledUpData(event, userFrom)
@@ -119,11 +120,11 @@ export function handleTransfer(event: Transfer): void {
         }
         userTo.save()
 
+        const avgBuyPriceOfUser = userFrom.entryValue.div(valueInBD)
+        userFrom.realizedEarnings = userFrom.realizedEarnings.plus((xUSDL.pricePerShare.minus(avgBuyPriceOfUser)).times(valueInBD))
         const oldFromBalance = userFrom.xUSDLBalance
         const updatedFromBalance = userFrom.xUSDLBalance.minus(valueInBD);
         userFrom.entryValue = userFrom.entryValue.times(updatedFromBalance.div(oldFromBalance))
-        const avgBuyPriceOfUser = userFrom.entryValue.div(valueInBD)
-        userFrom.realizedEarnings = userFrom.realizedEarnings.plus((xUSDL.pricePerShare.minus(avgBuyPriceOfUser)).times(valueInBD))
         userFrom.xUSDLBalance = updatedFromBalance
         userFrom.save()
         updateUserRolledUpData(event, userFrom)
