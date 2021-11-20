@@ -171,17 +171,19 @@ function calcAvgUSDEarningPerUSDL(avgUSDEarningPerUSDL: BigDecimal, USDEarnings:
     return avgUSDEarningPerUSDL;
 
 }
-
 function calcHourId(timestamp: number): number {
-    return timestamp / 3600
+    return calcIntervalId(timestamp, 3600)
 }
 function calcDayId(timestamp: number): number {
-    return timestamp / 86400
+    return calcIntervalId(timestamp, 86400)
 }
 function calcWeekId(timestamp: number): number {
-    return timestamp / 604800
+    return calcIntervalId(timestamp, 604800)
 }
 function calcMonthId(timestamp: number): number {
-    return timestamp / 2592000
+    return calcIntervalId(timestamp, 2592000)
+}
+function calcIntervalId(timestamp: number, interval: number): number {
+    return timestamp - timestamp % interval
 }
 
