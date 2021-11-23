@@ -18,7 +18,7 @@ export function handleDeposit(event: Deposit): void {
     }
     //calc unlockBlock
     const lemmaRouterUser = new User(Address.fromString(LEMMA_ROUTER_ADDRESS).toHex())
-    if (user.id.toString() != lemmaRouterUser.id.toString()) {
+    if (user.id.toString().toLowerCase().localeCompare(lemmaRouterUser.id.toString()) !== 0) {
         user.unlockBlock = event.block.number + xUSDL.minimumLock;
         user.save()
     }
@@ -115,10 +115,10 @@ export function handleTransfer(event: Transfer): void {
         //handle the minimum lock
         //if transferred from router to some address then change the lock up time for that address
         const lemmaRouterUser = new User(Address.fromString(LEMMA_ROUTER_ADDRESS).toHex())
-        if (userFrom.id.toString() == lemmaRouterUser.id.toString()) {
+        if (userFrom.id.toString().toLowerCase().localeCompare(lemmaRouterUser.id.toString().toLowerCase()) == 0) {
             userTo.unlockBlock = event.block.number + xUSDL.minimumLock;
+            userTo.save()
         }
-        userTo.save()
 
         const avgBuyPriceOfUser = userFrom.entryValue.div(valueInBD)
         userFrom.realizedEarnings = userFrom.realizedEarnings.plus((xUSDL.pricePerShare.minus(avgBuyPriceOfUser)).times(valueInBD))

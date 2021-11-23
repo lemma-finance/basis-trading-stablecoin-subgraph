@@ -1,4 +1,4 @@
-import { Transfer, Rebalance, FeesUpdated } from '../generated/USDLemma/USDLemma'
+import { Transfer, Rebalance, FeesUpdated, StakingContractUpdated } from '../generated/USDLemma/USDLemma'
 import {
     User, USDL, XUSDL,
     HourlyUserTrack, DailyUserTrack,
@@ -104,7 +104,7 @@ export function handleRebalance(event: Rebalance): void {
     // USDEarning += convertToDecimal(amount (emitted in reBalance event)) * (1 - usdl.fees)
     const valueInBD = convertToDecimal(event.params.amount, BI_18)
     const ONE = ONE_BD
-    let USDEarning = valueInBD.le(ZERO_BD) ? valueInBD : xUSDL.USDEarnings.plus(valueInBD.times(ONE.minus(usdl.fees)))//if negative then no fees
+    let USDEarning = valueInBD.le(ZERO_BD) ? valueInBD : valueInBD.times(ONE.minus(usdl.fees))//if negative then no fees
     xUSDL.USDEarnings = xUSDL.USDEarnings.plus(USDEarning)
     xUSDL.save()
 
@@ -128,13 +128,18 @@ export function handleFeesUpdated(event: FeesUpdated): void {
     let usdl = USDL.load(usdlId)
     if (usdl === null) {
         usdl = new USDL(usdlId)
-        usdl.totalSupply = ZERO_BD
-        usdl.multiplier = ZERO_BD
-        usdl.fees = ZERO_BD
     }
     const BI_4 = BigInt.fromI32(4)//fees are in bps
     usdl.fees = convertToDecimal(fees, BI_4)
     usdl.save()
 }
-
+export function handleStakingContractUpdated(event: StakingContractUpdated): void {
+    const usdlId = "1";
+    let usdl = USDL.load(usdlId)
+    if (usdl === null) {
+        usdl = new USDL(usdlId)
+    }
+    usdl.xUSDLAddress = event.params.current;
+    usdl.save()
+}
 

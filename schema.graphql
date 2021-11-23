@@ -14,6 +14,7 @@ type USDL @entity{
   multiplier: BigDecimal!
   fees: BigDecimal!
   maxCapacity: BigDecimal!
+  xUSDLAddress: Bytes!
 }
 type XUSDL @entity{
   id: ID!
@@ -21,6 +22,7 @@ type XUSDL @entity{
   pricePerShare: BigDecimal!
   USDEarnings:  BigDecimal!
   minimumLock: BigInt!
+  peripheryAddress: Bytes!
 }
 type HourlyUserTrack @entity{
   id: ID!

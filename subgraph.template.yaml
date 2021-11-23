@@ -36,6 +36,8 @@ dataSources:
           handler: handleRebalance
         - event: FeesUpdated(uint256)
           handler: handleFeesUpdated
+        - event: StakingContractUpdated(indexed address)
+          handler: handleStakingContractUpdated
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
     name: MCDEXLemma
