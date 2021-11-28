@@ -42,16 +42,19 @@ type HourlyVolume @entity{
   id: ID!
   hourlyUSDLTotalSupply: BigDecimal!
   hourlyxUSDLTotalSupply: BigDecimal!
+  hourlyPricePerShare: BigDecimal!
 }
 type DailyVolume @entity{
   id: ID!
   dailyUSDLTotalSupply: BigDecimal!
   dailyxUSDLTotalSupply: BigDecimal!
+  dailyPricePerShare: BigDecimal!
 }
 type MonthlyVolume @entity{
   id: ID!
   monthlyUSDLTotalSupply: BigDecimal!
   monthlyxUSDLTotalSupply: BigDecimal!
+  monthlyPricePerShare: BigDecimal!
 }
 type DailyAPY @entity{
   id: ID!

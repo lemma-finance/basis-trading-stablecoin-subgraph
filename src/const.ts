@@ -1,2 +1,2 @@
 export const XUSDL_ADDRESS = "0x5405b1f36d9fd253c07b8f1f17ed8320ce96b72a"
-export const LEMMA_ROUTER_ADDRESS = "0xfd6719d7d6af0a0ca828fac072e4d2499fe0cc44"
+export const LEMMA_ROUTER_ADDRESS = "0xf38abce4f8ddf5bb42e2210b3987bfc13e963990"

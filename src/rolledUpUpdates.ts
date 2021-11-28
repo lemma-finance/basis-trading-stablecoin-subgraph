@@ -52,6 +52,10 @@ export function updateRolledUpData(event: ethereum.Event): void {
     dailyVolume.dailyxUSDLTotalSupply = xUSDL.totalSupply
     monthlyVolume.monthlyxUSDLTotalSupply = xUSDL.totalSupply
 
+    hourlyVolume.hourlyPricePerShare = xUSDL.pricePerShare
+    dailyVolume.dailyPricePerShare = xUSDL.pricePerShare
+    monthlyVolume.monthlyPricePerShare = xUSDL.pricePerShare
+
     hourlyVolume.save()
     dailyVolume.save()
     monthlyVolume.save()
