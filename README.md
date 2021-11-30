@@ -1,6 +1,6 @@
 # Basis-trading-stablecoin-subgraph
 
-## Steps for deploy lemma-subgraph locally
+## Steps for deploying lemma-subgraph locally
 
 1). Clone Graph node repo.
 

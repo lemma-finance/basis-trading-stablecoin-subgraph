@@ -33,6 +33,7 @@ export function handleDeposit(event: Deposit): void {
         }
     }
     xUSDL.save()
+    updateRolledUpData(event)
 }
 export function handleWithdraw(event: Withdraw): void {
     const xUSDLId = "1";
@@ -50,6 +51,7 @@ export function handleWithdraw(event: Withdraw): void {
         }
     }
     xUSDL.save()
+    updateRolledUpData(event)
 }
 
 
