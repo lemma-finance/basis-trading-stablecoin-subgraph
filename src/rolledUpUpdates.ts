@@ -1,6 +1,6 @@
 import {
     User, USDL, XUSDL,
-    HourlyUserTrack, DailyUserTrack,
+    HourlyUserTrack, DailyUserTrack, MonthlyUserTrack,
     HourlyVolume, DailyVolume, MonthlyVolume,
     DailyAPY, WeeklyAPY, MonthlyAPY
 } from '../generated/schema'
@@ -95,6 +95,22 @@ export function updateUserRolledUpData(event: ethereum.Event, user: User): void 
     dailyUserTrack.dailyUsdLBalance = user.usdLBalance
     dailyUserTrack.dailyXusdlBalance = user.xUSDLBalance
     dailyUserTrack.save()
+
+    // montly
+    let monthIndex = calcMonthId(timestamp) // rounded
+    let userMonthlyID = user.id
+        .toString()
+        .concat('-')
+        .concat(monthIndex.toString())
+    let monthlyUserTrack = MonthlyUserTrack.load(userMonthlyID.toString())
+    if (monthlyUserTrack === null) {
+        monthlyUserTrack = new MonthlyUserTrack(userMonthlyID.toString())
+    }
+    monthlyUserTrack.user = user.id
+    monthlyUserTrack.monthlyEntryValue = user.entryValue
+    monthlyUserTrack.monthlyUsdLBalance = user.usdLBalance
+    monthlyUserTrack.monthlyXusdlBalance = user.xUSDLBalance
+    monthlyUserTrack.save()
 }
 export function updateAPYRolledUpData(event: ethereum.Event, usdEarnings: BigDecimal): void {
     const usdlId = "1";

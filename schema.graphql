@@ -7,6 +7,7 @@ type User @entity{
   unlockBlock: BigInt!
   hourlyUserData: [HourlyUserTrack!]! @derivedFrom(field: "user")
   dailyUserData: [DailyUserTrack!]! @derivedFrom(field: "user")
+  monthlyUserData: [MonthlyUserTrack!]! @derivedFrom(field: "user")
 }
 type USDL @entity{
   id: ID!
@@ -37,6 +38,13 @@ type DailyUserTrack @entity{
   dailyUsdLBalance: BigDecimal!
   dailyXusdlBalance:BigDecimal!
   dailyEntryValue: BigDecimal!
+}
+type MonthlyUserTrack @entity{
+  id: ID!
+  user: User!
+  monthlyUsdLBalance: BigDecimal!
+  monthlyXusdlBalance:BigDecimal!
+  monthlyEntryValue: BigDecimal!
 }
 type HourlyVolume @entity{
   id: ID!
