@@ -141,5 +141,11 @@ export function handleUpdateMinimumLock(event: UpdateMinimumLock): void {
         xUSDL = new XUSDL(usdlId)
         xUSDL.pricePerShare = ONE_BD
     }
-    xUSDL.minimumLock = event.params.newLock
+    //the block.number given in the subgraph is the block number of arbitrum
+    //the block.number enforced in the contract is the block number from the mainnet
+    //here the multiplier is the mainnet block speed / arbitrum block speed 
+    //this is the best estimation
+    const BI_15 = BigInt.fromI32(15)
+    xUSDL.minimumLock = event.params.newLock.times(BI_15)
+    xUSDL.save()
 }
