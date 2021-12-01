@@ -85,4 +85,6 @@ dataSources:
           handler: handleDeposit
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
+        - event: UpdateMinimumLock(uint256)
+          handler: handleUpdateMinimumLock
       file: ./src/xUSDL.ts
