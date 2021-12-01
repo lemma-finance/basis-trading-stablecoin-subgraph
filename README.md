@@ -19,7 +19,7 @@
     1. git submodule update --init
     2. npm install
     3. cd mai-protocol-v3/
-    4. npm install --force
+    4. npm install
 
     B. Run node on basis-trading-stablecoin
     npx hardhat node --hostname 0.0.0.0
