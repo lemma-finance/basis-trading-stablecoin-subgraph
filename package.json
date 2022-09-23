@@ -6,6 +6,7 @@
     "prepare:arb-rinkeby": "mustache config/arb-rinkeby.json subgraph.template.yaml > subgraph.yaml; mustache config/arb-rinkeby.json const.template.ts > src/const.ts",
     "prepare:arb-one": "mustache config/arb-one.json subgraph.template.yaml > subgraph.yaml; mustache config/arb-one.json const.template.ts > src/const.ts",
     "prepare:optimism-kovan": "mustache config/optimism-kovan.json subgraph.template.yaml > subgraph.yaml; mustache config/optimism-kovan.json const.template.ts > src/const.ts",
+    "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml; mustache config/optimism.json const.template.ts > src/const.ts",
     "build-contract": "solc contracts/Gravity.sol --abi -o abis --overwrite && solc contracts/Gravity.sol --bin -o bin --overwrite",
     "create": "graph create yashnaman/basisTradingStablecoinSubgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create yashnaman/basisTradingStablecoinSubgraph --node http://127.0.0.1:8020",
@@ -14,7 +15,8 @@
     "deploy": "graph deploy yashnaman/basisTradingStablecoinSubgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy yashnaman/basisTradingStablecoinSubgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "auth": "graph auth --product hosted-service",
-    "deploy:optimism-kovan": "graph deploy --product hosted-service yashnaman/usdl-optimism-kovan"
+    "deploy:optimism-kovan": "graph deploy --product hosted-service yashnaman/usdl-optimism-kovan",
+    "deploy:optimism": "graph deploy --product hosted-service yashnaman/usdl-optimism-mainnet"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.22.1",

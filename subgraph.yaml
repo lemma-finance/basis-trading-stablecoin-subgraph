@@ -6,9 +6,9 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: USDLemma
-    network: optimism-kovan
+    network: optimism
     source:
-      address: "0x64abDae72F893e10B6f8BDe0621e38663A8295e6"
+      address: "0x96F2539d3684dbde8B3242A51A73B66360a5B541"
       abi: USDLemma
     mapping:
       kind: ethereum/events
@@ -41,9 +41,9 @@ dataSources:
       file: ./src/usdLemma.ts
   - kind: ethereum/contract
     name: MCDEXLemma
-    network: optimism-kovan
+    network: optimism
     source:
-      address: "0x1F57553625789a0449b4e117f121103971f4A080"
+      address: "0x29b159aE784Accfa7Fb9c7ba1De272bad75f5674"
       abi: MCDEXLemma
     mapping:
       kind: ethereum/events
@@ -60,9 +60,9 @@ dataSources:
       file: ./src/mcdexLemma.ts
   - kind: ethereum/contract
     name: XUSDL
-    network: optimism-kovan
+    network: optimism
     source:
-      address: "0xb95444CA5825ba80e24b01aE1A3F9C9aB7a25DFe"
+      address: "0x252Ea7E68a27390Ce0D53851192839A39Ab8B38C"
       abi: XUSDL
     mapping:
       kind: ethereum/events

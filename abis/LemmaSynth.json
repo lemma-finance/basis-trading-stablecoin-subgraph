@@ -29,9 +29,9 @@
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "dexIndex",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "perpLemma",
+                "type": "address"
             },
             {
                 "indexed": true,
@@ -72,19 +72,6 @@
             }
         ],
         "name": "FeesUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "current",
-                "type": "address"
-            }
-        ],
-        "name": "LemmaTreasuryUpdated",
         "type": "event"
     },
     {
@@ -193,11 +180,11 @@
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "_settlementTokenManager",
+                "name": "tailCollateral",
                 "type": "address"
             }
         ],
-        "name": "SetSettlementTokenManager",
+        "name": "SetTailCollateral",
         "type": "event"
     },
     {
@@ -230,9 +217,9 @@
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "dexIndex",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "perpLemma",
+                "type": "address"
             },
             {
                 "indexed": true,
@@ -532,7 +519,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "minUSDLToMint",
+                "name": "minSynthToMint",
                 "type": "uint256"
             },
             {
@@ -553,30 +540,6 @@
             {
                 "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "perpetualDEXIndex",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "collateral",
-                "type": "address"
-            }
-        ],
-        "name": "getAvailableSettlementToken",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "res",
                 "type": "uint256"
             }
         ],
@@ -749,23 +712,28 @@
             },
             {
                 "internalType": "address",
-                "name": "_collateralAddress",
+                "name": "_perpLemma",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "_perpetualDEXWrapperAddress",
+                "name": "_usdc",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "_settlementTokenManager",
+                "name": "_tailCollateral",
                 "type": "address"
             },
             {
-                "internalType": "address",
-                "name": "_perpSettlementToken",
-                "type": "address"
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_symbol",
+                "type": "string"
             }
         ],
         "name": "initialize",
@@ -809,25 +777,6 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "isSupportedStableForMinting",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
                 "name": "forwarder",
                 "type": "address"
             }
@@ -838,19 +787,6 @@
                 "internalType": "bool",
                 "name": "",
                 "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "lemmaTreasury",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -946,7 +882,7 @@
     },
     {
         "inputs": [],
-        "name": "perpSettlementToken",
+        "name": "perpLemma",
         "outputs": [
             {
                 "internalType": "address",
@@ -1002,19 +938,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "usdcAmount",
-                "type": "uint256"
-            }
-        ],
-        "name": "requestLossesRecap",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "bytes32",
                 "name": "role",
                 "type": "bytes32"
@@ -1047,11 +970,11 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_lemmaTreasury",
+                "name": "_tailCollateral",
                 "type": "address"
             }
         ],
-        "name": "setLemmaTreasury",
+        "name": "setTailCollateral",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1060,39 +983,13 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_settlementTokenManager",
+                "name": "_xSynth",
                 "type": "address"
             }
         ],
-        "name": "setSettlementTokenManager",
+        "name": "setXSynth",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_xUsdl",
-                "type": "address"
-            }
-        ],
-        "name": "setXUsdl",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "settlementTokenManager",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -1122,6 +1019,19 @@
                 "internalType": "string",
                 "name": "",
                 "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "tailCollateral",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -1194,6 +1104,19 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "usdc",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -1245,7 +1168,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "maxUSDLToBurn",
+                "name": "maxSynthToBurn",
                 "type": "uint256"
             },
             {
@@ -1261,7 +1184,7 @@
     },
     {
         "inputs": [],
-        "name": "xUsdl",
+        "name": "xSynth",
         "outputs": [
             {
                 "internalType": "address",

@@ -375,13 +375,23 @@
             },
             {
                 "internalType": "address",
-                "name": "_usdl",
+                "name": "_lSynth",
                 "type": "address"
             },
             {
                 "internalType": "address",
                 "name": "_periphery",
                 "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "_name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_symbol",
+                "type": "string"
             }
         ],
         "name": "initialize",
@@ -403,6 +413,19 @@
                 "internalType": "bool",
                 "name": "",
                 "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "lSynth",
+        "outputs": [
+            {
+                "internalType": "contract IERC20Upgradeable",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -846,19 +869,6 @@
         "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "usdl",
-        "outputs": [
-            {
-                "internalType": "contract IERC20Upgradeable",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
